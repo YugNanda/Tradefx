@@ -1,0 +1,186 @@
+.sym-detail {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px;
+}
+
+.sym-detail-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 220px;
+  color: var(--text-4);
+  text-align: center;
+  font-size: 13px;
+}
+
+.sd-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.sd-symbol {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-1);
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sd-exchange {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-4);
+  background: var(--bg-subtle);
+  border-radius: var(--r-full);
+  padding: 2px 8px;
+  letter-spacing: 0.04em;
+}
+
+.sd-name { font-size: 12.5px; color: var(--text-3); margin-top: 2px; }
+
+.sd-price-block { text-align: right; }
+
+.sd-price {
+  font-family: var(--mono);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.sd-currency { font-size: 12px; color: var(--text-4); font-weight: 500; }
+
+.sd-change {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.sd-stale, .sd-approx {
+  font-size: 10.5px;
+  color: var(--text-4);
+  margin-top: 4px;
+  max-width: 220px;
+}
+
+.sd-stale { color: var(--warn); }
+
+.sd-chart { margin: 8px 0 16px; }
+
+.sd-chart-empty {
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-4);
+  font-size: 12.5px;
+  border: 1px dashed var(--border);
+  border-radius: var(--r-md);
+}
+
+.sd-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sd-trade { display: flex; align-items: center; gap: 8px; }
+
+.sd-qty {
+  width: 80px;
+  height: 36px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 0 10px;
+  color: var(--text-1);
+  font-family: var(--mono);
+  font-size: 13px;
+  outline: none;
+}
+
+.sd-qty:focus { border-color: var(--border-focus); }
+
+.sd-btn {
+  height: 36px;
+  padding: 0 18px;
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.sd-btn:active { transform: scale(0.97); }
+.sd-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.sd-btn.buy { background: var(--gain); color: white; }
+.sd-btn.sell { background: var(--loss); color: white; }
+
+.sd-signal-btn {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent-light);
+  color: var(--accent);
+  border: 1px solid var(--accent-mid);
+}
+
+.sd-signal-btn:disabled { opacity: 0.7; cursor: wait; }
+
+.sd-signal {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--bg-subtle);
+}
+
+.sd-signal-tag {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 3px 10px;
+  border-radius: var(--r-full);
+  margin-right: 8px;
+}
+
+.sd-signal-buy .sd-signal-tag { background: var(--gain-bg); color: var(--gain); }
+.sd-signal-sell .sd-signal-tag { background: var(--loss-bg); color: var(--loss); }
+.sd-signal-hold .sd-signal-tag { background: var(--bg-card); color: var(--text-3); }
+
+.sd-signal-confidence { font-size: 11.5px; color: var(--text-3); font-family: var(--mono); }
+
+.sd-signal p { font-size: 13px; color: var(--text-2); margin: 8px 0 6px; line-height: 1.5; }
+
+.sd-signal-disclaimer { font-size: 10.5px; color: var(--text-4); font-style: italic; }
+
+.spin { animation: spinRing 0.8s linear infinite; }
+
+@media (max-width: 560px) {
+  .sd-price-block { text-align: left; }
+  .sd-head { flex-direction: column; }
+}

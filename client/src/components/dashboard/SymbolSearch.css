@@ -1,0 +1,73 @@
+.sym-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 0 12px;
+  height: 38px;
+  transition: border-color 0.15s;
+}
+
+.sym-search:focus-within {
+  border-color: var(--border-focus);
+}
+
+.sym-search-icon { color: var(--text-4); flex-shrink: 0; }
+
+.sym-search input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-1);
+  font-size: 13px;
+  padding: 0 0 0 8px;
+}
+
+.sym-search input::placeholder { color: var(--text-4); }
+
+.sym-search-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-lg);
+  max-height: 280px;
+  overflow-y: auto;
+  z-index: 30;
+  animation: fadeIn 0.12s ease;
+}
+
+.sym-search-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
+  text-align: left;
+  font-size: 12.5px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+
+.sym-search-row:last-child { border-bottom: none; }
+.sym-search-row:hover { background: var(--bg-subtle); }
+
+.ssr-symbol { font-weight: 700; color: var(--text-1); font-family: var(--mono); min-width: 70px; }
+.ssr-name { color: var(--text-3); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ssr-tag {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-light);
+  border-radius: var(--r-full);
+  padding: 2px 8px;
+  flex-shrink: 0;
+}

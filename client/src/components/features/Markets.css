@@ -1,0 +1,129 @@
+.markets {
+  padding: 96px 24px;
+  background: var(--bg-subtle);
+}
+
+.markets-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.market-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 18px 16px 12px;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  animation: fadeUp 0.5s ease both;
+  cursor: pointer;
+}
+
+.market-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.mc-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.mc-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mc-flag {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.mc-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.01em;
+}
+
+.mc-exch {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-4);
+  letter-spacing: 0.06em;
+  margin-top: 1px;
+}
+
+.mc-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: var(--r-full);
+  font-family: var(--mono);
+}
+
+.mc-badge.up { background: var(--gain-bg); color: var(--gain); }
+.mc-badge.dn { background: var(--loss-bg); color: var(--loss); }
+
+.mc-price {
+  font-family: var(--mono);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-1);
+  letter-spacing: -0.02em;
+  margin-bottom: 10px;
+}
+
+.mc-spark {
+  width: 100%;
+  height: 40px;
+  display: block;
+}
+
+/* More row */
+.markets-more {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.markets-more > span {
+  font-size: 13px;
+  color: var(--text-4);
+  white-space: nowrap;
+}
+
+.markets-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mtag {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-3);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-full);
+  padding: 4px 10px;
+}
+
+@media (max-width: 1100px) {
+  .markets-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .markets-grid { grid-template-columns: repeat(2, 1fr); }
+  .markets { padding: 64px 20px; }
+}
+
+@media (max-width: 480px) {
+  .markets-grid { grid-template-columns: repeat(2, 1fr); }
+}

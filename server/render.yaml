@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: tradex-server
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGO_URI
+        sync: false        # set manually in Render dashboard
+      - key: JWT_SECRET
+        sync: false        # set manually in Render dashboard
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: ALPHAVANTAGE_API_KEY
+        sync: false        # set manually in Render dashboard
+      - key: NEWSDATA_API_KEY
+        sync: false        # set manually in Render dashboard
+      - key: CLIENT_URL
+        sync: false        # set to your Vercel URL, e.g. https://tradex.vercel.app
+      - key: PRICE_STALE_MS
+        value: "10800000"
+      - key: PRICE_POLL_INTERVAL_MS
+        value: "10800000"
+      - key: AV_DAILY_LIMIT
+        value: "23"
+      - key: NEWS_CACHE_HOURS
+        value: "6"
+      - key: ND_DAILY_LIMIT
+        value: "180"
