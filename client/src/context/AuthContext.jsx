@@ -42,6 +42,12 @@ export function AuthProvider({ children }) {
     return user
   }
 
+  const setAuthSession = (token, user) => {
+    localStorage.setItem('tradex_token', token)
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    setUser(user)
+  }
+
   const logout = () => {
     localStorage.removeItem('tradex_token')
     delete axios.defaults.headers.common['Authorization']
@@ -49,7 +55,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, setAuthSession }}>
       {children}
     </AuthContext.Provider>
   )

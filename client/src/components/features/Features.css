@@ -60,6 +60,13 @@
   transform: translateY(-3px);
 }
 
+.fc-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
 .fc-icon {
   width: 44px;
   height: 44px;
@@ -69,12 +76,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
   transition: background 0.2s;
 }
 
 .feature-card:hover .fc-icon {
   background: var(--accent-mid);
+}
+
+.fc-badge {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: var(--r-full);
+  background: var(--bg-subtle);
+  color: var(--accent);
+  border: 1px solid var(--border);
 }
 
 .fc-title {

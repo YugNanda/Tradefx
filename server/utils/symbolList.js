@@ -33,10 +33,28 @@ const CATALOG = [
   { symbol: 'EURUSD', name: 'Euro / US Dollar', exchange: 'FOREX', assetClass: 'forex', currency: 'USD' },
   { symbol: 'GBPUSD', name: 'British Pound / US Dollar', exchange: 'FOREX', assetClass: 'forex', currency: 'USD' },
   { symbol: 'USDJPY', name: 'US Dollar / Japanese Yen', exchange: 'FOREX', assetClass: 'forex', currency: 'JPY' },
+
+  // ── Commodities ────────────────────────────────────────────────
+  { symbol: 'GOLD', name: 'Gold Spot (XAU/USD)', exchange: 'COMMODITY', assetClass: 'commodity', currency: 'USD' },
+  { symbol: 'SILVER', name: 'Silver Spot (XAG/USD)', exchange: 'COMMODITY', assetClass: 'commodity', currency: 'USD' },
+  { symbol: 'CRUDEOIL', name: 'Crude Oil (WTI)', exchange: 'COMMODITY', assetClass: 'commodity', currency: 'USD' },
 ]
 
-const bySymbol = (symbol) =>
-  CATALOG.find((c) => c.symbol.toUpperCase() === String(symbol).toUpperCase())
+const bySymbol = (symbol) => {
+  if (!symbol) return null
+  const s = String(symbol).trim().toUpperCase()
+  const found = CATALOG.find((c) => c.symbol.toUpperCase() === s)
+  if (found) return found
+
+  // Dynamic fallback so any selected symbol or search query never fails
+  return {
+    symbol: s,
+    name: `${s} Asset`,
+    exchange: s.length > 5 ? 'NSE' : 'GLOBAL',
+    assetClass: s.includes('USD') || s.includes('INR') ? 'forex' : 'stock',
+    currency: s.endsWith('INR') ? 'INR' : 'USD',
+  }
+}
 
 const search = (query, assetClass) => {
   const q = String(query || '').toLowerCase().trim()

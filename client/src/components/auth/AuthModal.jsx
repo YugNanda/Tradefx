@@ -11,7 +11,7 @@ export default function AuthModal({ mode: initialMode, onClose }) {
   const [showPass, setShowPass] = useState(false)
   const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' })
   const [errors, setErrors] = useState({})
-  const { login, register } = useAuth()
+  const { login, register, setAuthSession } = useAuth()
   const navigate = useNavigate()
 
   // ── Forgot Password / 6-Digit OTP State ──
@@ -197,13 +197,20 @@ export default function AuthModal({ mode: initialMode, onClose }) {
     setLoading(true)
     try {
       const code = otpDigits.join('')
-      await axios.post('/api/auth/reset-password', {
+      const res = await axios.post('/api/auth/reset-password', {
         email: forgotEmail,
         otp: code,
         newPassword,
       })
-      toast.success('Password updated successfully! Sign in with your new credentials.', { duration: 5000 })
-      switchMode('login')
+      if (res.data?.token && res.data?.user && setAuthSession) {
+        setAuthSession(res.data.token, res.data.user)
+        toast.success('Password updated! Redirecting to dashboard...', { duration: 3000 })
+        onClose()
+        navigate('/dashboard')
+      } else {
+        toast.success('Password updated successfully! Sign in with your new credentials.', { duration: 5000 })
+        switchMode('login')
+      }
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to reset password')
     } finally {

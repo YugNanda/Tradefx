@@ -22,7 +22,7 @@ export default function LandingPage() {
       <main>
         <Hero onOpenAuth={openAuth} />
         <Features />
-        <Markets />
+        <Markets onOpenAuth={openAuth} />
         <Testimonials />
         <FAQ />
       </main>

@@ -158,13 +158,18 @@ exports.resetPassword = async (req, res) => {
     user.password = newPassword
     user.resetPasswordOtp = undefined
     user.resetPasswordOtpExpires = undefined
+    user.lastLogin = new Date()
     await user.save()
 
-    console.log(`✅ [SECURITY] Password reset successfully for ${email}`)
+    const token = signToken(user._id)
+
+    console.log(`✅ [SECURITY] Password reset successfully and authenticated for ${email}`)
 
     res.json({
       success: true,
-      message: 'Password reset successfully! You can now sign in with your new password.',
+      message: 'Password reset successfully! Logged in to TradeX.',
+      token,
+      user: user.toSafeObject(),
     })
   } catch (err) {
     console.error('Reset password error:', err)

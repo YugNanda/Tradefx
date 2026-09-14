@@ -52,6 +52,9 @@ const BASELINES = {
   EURUSD:     { price: 1.0864, changePercent: -0.15, dayHigh: 1.0890, dayLow: 1.0835 },
   GBPUSD:     { price: 1.2735, changePercent: 0.12, dayHigh: 1.2770, dayLow: 1.2690 },
   USDJPY:     { price: 154.85, changePercent: 0.35, dayHigh: 155.40, dayLow: 154.10 },
+  GOLD:       { price: 2654.80, changePercent: 0.65, dayHigh: 2668.00, dayLow: 2642.50 },
+  SILVER:     { price: 31.85, changePercent: 1.15, dayHigh: 32.20, dayLow: 31.40 },
+  CRUDEOIL:   { price: 72.45, changePercent: -0.85, dayHigh: 73.80, dayLow: 71.90 },
 }
 
 function isBackingOff(symbol) {

@@ -164,16 +164,7 @@ export default function SymbolDetail({ instrument, onTraded }) {
     }
   }
 
-  if (!instrument) {
-    return (
-      <div className="sym-detail sym-detail-empty">
-        <Sparkles size={24} color="var(--accent)" />
-        <p>Select any symbol from search or watchlist to open live institutional terminal & charts.</p>
-      </div>
-    )
-  }
-
-  const currentPrice = quote?.price || instrument.price || 0
+  const currentPrice = quote?.price || instrument?.price || 0
   const up = (quote?.changePercent ?? 0) >= 0
 
   // Current active candle values for OHLC HUD
@@ -188,7 +179,7 @@ export default function SymbolDetail({ instrument, onTraded }) {
   const isCandle = chartType === 'candlestick'
 
   const chartSeries = useMemo(() => {
-    if (!candles.length) return []
+    if (!candles.length || !symbol) return []
     if (isCandle) {
       return [
         {
@@ -211,7 +202,7 @@ export default function SymbolDetail({ instrument, onTraded }) {
     ]
   }, [candles, isCandle, symbol])
 
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+  const isDark = typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'dark'
 
   const chartOptions = useMemo(() => {
     return {
@@ -308,6 +299,15 @@ export default function SymbolDetail({ instrument, onTraded }) {
 
     return { asks, bids, spread: Number((step * 2).toFixed(2)) }
   }, [currentPrice])
+
+  if (!instrument) {
+    return (
+      <div className="sym-detail sym-detail-empty">
+        <Sparkles size={24} color="var(--accent)" />
+        <p>Select any symbol from search or watchlist to open live institutional terminal & charts.</p>
+      </div>
+    )
+  }
 
   // Estimated order cost
   const rawSubtotal = currentPrice * Number(qty || 0)
