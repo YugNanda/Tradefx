@@ -15,6 +15,17 @@ const memoryCache = new Map()
 
 // Per-symbol error backoff tracking
 const failureBackoff = new Map()
+const lastAvCallTime = new Map()
+const AV_CALL_INTERVAL_MS = 60 * 60 * 1000
+
+function shouldAttemptAv(symbol) {
+  const last = lastAvCallTime.get(symbol) || 0
+  return (
+    Date.now() - last > AV_CALL_INTERVAL_MS &&
+    !isBackingOff(symbol) &&
+    !alphavantage.isLimitReached()
+  )
+}
 
 // Baseline calibration values for institutional simulation fallback
 const BASELINES = {
@@ -124,9 +135,8 @@ async function refreshSymbol(symbol) {
   }
 
   let quote = null
-  const shouldTryAv = !isBackingOff(instrument.symbol) && !alphavantage.isLimitReached()
-
-  if (shouldTryAv) {
+  if (shouldAttemptAv(instrument.symbol)) {
+    lastAvCallTime.set(instrument.symbol, Date.now())
     try {
       quote = await alphavantage.getQuote(instrument)
       doc.price = quote.price

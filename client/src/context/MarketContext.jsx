@@ -23,9 +23,13 @@ export function MarketProvider({ children }) {
     socket.on('connect', () => setConnected(true))
     socket.on('disconnect', () => setConnected(false))
 
-    socket.on('tick', (tick) => {
+    const handleTick = (tick) => {
+      if (!tick?.symbol) return
       setQuotes((prev) => ({ ...prev, [tick.symbol]: tick }))
-    })
+    }
+
+    socket.on('tick', handleTick)
+    socket.on('tick:stream', handleTick)
 
     socket.on('alert:triggered', (alert) => {
       toast(

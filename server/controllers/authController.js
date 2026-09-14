@@ -3,7 +3,7 @@ const User = require('../models/User')
 
 const signToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || '7d'
+    expiresIn: process.env.JWT_EXPIRES_IN || '7d',
   })
 
 exports.register = async (req, res) => {
@@ -23,12 +23,12 @@ exports.register = async (req, res) => {
 
     const token = signToken(user._id)
     user.lastLogin = new Date()
-    await user.save({ validateBeforeSave: false })
+    await user.save()
 
     res.status(201).json({
       message: 'Account created successfully',
       token,
-      user: user.toSafeObject()
+      user: user.toSafeObject(),
     })
   } catch (err) {
     console.error('Register error:', err)
@@ -54,12 +54,12 @@ exports.login = async (req, res) => {
 
     const token = signToken(user._id)
     user.lastLogin = new Date()
-    await user.save({ validateBeforeSave: false })
+    await user.save()
 
     res.json({
       message: 'Logged in successfully',
       token,
-      user: user.toSafeObject()
+      user: user.toSafeObject(),
     })
   } catch (err) {
     console.error('Login error:', err)
@@ -74,5 +74,100 @@ exports.getMe = async (req, res) => {
     res.json({ user: user.toSafeObject() })
   } catch (err) {
     res.status(500).json({ message: 'Server error' })
+  }
+}
+
+// ── 6-Digit OTP Password Reset Flow ──────────────────────────────────
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body
+    if (!email) return res.status(400).json({ message: 'Email address is required' })
+
+    const user = await User.findOne({ email: email.toLowerCase() })
+    if (!user) {
+      return res.status(404).json({ message: 'No TradeX account found with this email address' })
+    }
+
+    // Generate random 6-digit numeric OTP
+    const otp = String(Math.floor(100000 + Math.random() * 900000))
+    user.resetPasswordOtp = otp
+    user.resetPasswordOtpExpires = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes expiry
+    await user.save()
+
+    console.log(`🔑 [SECURITY OTP] Password Reset OTP for ${email}: [ ${otp} ] (Valid 10 mins)`)
+
+    res.json({
+      message: '6-digit verification code generated successfully',
+      email: user.email,
+      otp, // Provided in response for interactive simulation & browser verification popup
+    })
+  } catch (err) {
+    console.error('Forgot password error:', err)
+    res.status(500).json({ message: err.message || 'Server error' })
+  }
+}
+
+exports.verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body
+    if (!email || !otp) return res.status(400).json({ message: 'Email and 6-digit OTP are required' })
+
+    const user = await User.findOne({
+      email: email.toLowerCase(),
+      resetPasswordOtp: String(otp).trim(),
+      resetPasswordOtpExpires: { $gt: new Date() },
+    })
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired 6-digit verification code' })
+    }
+
+    res.json({
+      verified: true,
+      message: 'Verification code verified successfully',
+    })
+  } catch (err) {
+    console.error('Verify OTP error:', err)
+    res.status(500).json({ message: err.message || 'Server error' })
+  }
+}
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: 'Email, OTP, and new password are required' })
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters long' })
+    }
+
+    const user = await User.findOne({
+      email: email.toLowerCase(),
+      resetPasswordOtp: String(otp).trim(),
+      resetPasswordOtpExpires: { $gt: new Date() },
+    })
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired 6-digit verification code' })
+    }
+
+    // Set new password (bcrypt pre-save hook in User model hashes it)
+    user.password = newPassword
+    user.resetPasswordOtp = undefined
+    user.resetPasswordOtpExpires = undefined
+    await user.save()
+
+    console.log(`✅ [SECURITY] Password reset successfully for ${email}`)
+
+    res.json({
+      success: true,
+      message: 'Password reset successfully! You can now sign in with your new password.',
+    })
+  } catch (err) {
+    console.error('Reset password error:', err)
+    res.status(500).json({ message: err.message || 'Server error' })
   }
 }

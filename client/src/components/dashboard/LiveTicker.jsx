@@ -1,7 +1,7 @@
 import { useLiveQuotes } from '../../context/MarketContext'
 import '../ticker/Ticker.css'
 
-const TRACKED = ['NIFTY50', 'BTC', 'AAPL']
+const TRACKED = ['NIFTY50', 'SENSEX', 'BTC', 'ETH', 'RELIANCE', 'TCS', 'AAPL', 'NVDA', 'EURUSD', 'GOLD']
 
 const fmt = (n) => {
   if (n == null) return '—'
@@ -19,13 +19,13 @@ export default function LiveTicker() {
     <div className="ticker-bar">
       <div className="ticker-live">
         <span className="ticker-dot" />
-        {items.length ? 'LIVE' : 'CONNECTING'}
+        {items.length ? 'STREAMING 1.5S' : 'CONNECTING'}
       </div>
       <div className="ticker-track">
         <div className="ticker-inner">
           {display.length === 0 && (
             <span className="ticker-item">
-              <span className="t-sym">Fetching live prices…</span>
+              <span className="t-sym">Connecting to high-frequency market stream…</span>
             </span>
           )}
           {display.map((t, i) => (
@@ -34,7 +34,7 @@ export default function LiveTicker() {
               <span className="t-price">{fmt(t.price)}</span>
               {typeof t.changePercent === 'number' && (
                 <span className={`t-chg ${t.changePercent >= 0 ? 'up' : 'dn'}`}>
-                  {t.changePercent >= 0 ? '+' : ''}
+                  {t.changePercent >= 0 ? '▲ +' : '▼ '}
                   {t.changePercent.toFixed(2)}%
                 </span>
               )}
@@ -47,3 +47,4 @@ export default function LiveTicker() {
     </div>
   )
 }
+

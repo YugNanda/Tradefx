@@ -193,3 +193,38 @@
   .dash-grid { grid-template-columns: 1fr; }
   .dash-body { padding: 16px 16px 48px; }
 }
+
+/* Live Connection Status Pill */
+.dash-live-conn-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  padding: 3px 8px;
+  border-radius: var(--r-full);
+  margin-left: 6px;
+}
+
+.dash-conn-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #9CA3AF;
+  transition: background 0.2s ease;
+}
+
+.dash-conn-dot.on {
+  background: #10B981;
+  box-shadow: 0 0 6px #10B981;
+  animation: livePing 1.2s infinite;
+}
+
+.dash-conn-text {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-3);
+  text-transform: uppercase;
+}
+

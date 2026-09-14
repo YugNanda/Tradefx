@@ -47,6 +47,8 @@ const userSchema = new mongoose.Schema({
     lossTrades: { type: Number, default: 0 },
     totalRealizedPnl: { type: Number, default: 0 },
   },
+  resetPasswordOtp: String,
+  resetPasswordOtpExpires: Date,
   watchlist: [{
     symbol: String,
     name: String,
