@@ -47,6 +47,44 @@
   gap: 10px;
 }
 
+.dash-header-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-2);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  position: relative;
+  transition: all 0.15s;
+}
+
+.dash-header-btn:hover {
+  color: var(--text-1);
+  border-color: var(--border-strong);
+  background: var(--bg-card-hover);
+}
+
+.dash-notif-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--loss);
+  color: white;
+  font-size: 9.5px;
+  font-weight: 800;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+}
+
 .dash-theme-btn {
   width: 32px;
   height: 32px;

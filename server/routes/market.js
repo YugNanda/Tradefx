@@ -10,5 +10,6 @@ router.get('/symbols', ctrl.listSymbols)
 router.get('/quotes', quoteLimiter, ctrl.getQuotes)       // ?symbols=AAPL,BTC,NIFTY50
 router.get('/quote/:symbol', quoteLimiter, ctrl.getQuote)
 router.get('/history/:symbol', ctrl.getHistory)
+router.get('/ohlc/:symbol', ctrl.getOhlc)
 
 module.exports = router

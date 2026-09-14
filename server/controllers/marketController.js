@@ -47,6 +47,18 @@ exports.getHistory = async (req, res) => {
   }
 }
 
+exports.getOhlc = async (req, res) => {
+  try {
+    const { symbol } = req.params
+    const timeframe = req.query.timeframe || '1D'
+    scheduler.trackSymbol(symbol)
+    const ohlc = await marketData.getOhlcHistory(symbol, timeframe)
+    res.json(ohlc)
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+}
+
 exports.search = (req, res) => {
   const { q, assetClass } = req.query
   res.json({ results: symbolList.search(q, assetClass) })

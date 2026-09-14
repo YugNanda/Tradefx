@@ -3,9 +3,7 @@ import { Newspaper, ExternalLink, Loader2, RefreshCw } from 'lucide-react'
 import { newsApi } from '../../api/marketApi'
 import './NewsPanel.css'
 
-// News is fetch-on-demand rather than automatic. Every fetch costs an AI
-// call against your provider quota, and switching symbols frequently would
-// otherwise trigger one automatically each time — expensive on a free tier.
+// News is cached in MongoDB with a 6-hour TTL and fetched from Newsdata.io.
 export default function NewsPanel({ symbol }) {
   const [news, setNews] = useState(null) // null = not loaded yet
   const [loading, setLoading] = useState(false)
@@ -33,15 +31,15 @@ export default function NewsPanel({ symbol }) {
     <div className="side-panel news-panel">
       <div className="side-panel-head news-panel-head">
         <Newspaper size={15} />
-        <h3>{symbol ? `${symbol} news` : 'Market news'}</h3>
-        <button className="news-refresh-btn" onClick={load} disabled={loading} title="Fetch news (uses an AI call)">
+        <h3>{symbol ? `${symbol} Financial News` : 'Global Market Headlines'}</h3>
+        <button className="news-refresh-btn" onClick={load} disabled={loading} title="Refresh live headlines">
           {loading ? <Loader2 size={13} className="spin" /> : <RefreshCw size={13} />}
         </button>
       </div>
 
       {news === null && !loading && (
         <button className="news-load-btn" onClick={load}>
-          Load {symbol ? `${symbol} ` : 'market '}news
+          Load {symbol ? `${symbol} ` : 'market '}headlines
         </button>
       )}
 

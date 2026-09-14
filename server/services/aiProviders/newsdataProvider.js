@@ -19,29 +19,58 @@ const path = require('path')
 const BASE_URL = 'https://newsdata.io/api/1/latest'
 const TIMEOUT_MS = 10000
 
+const SystemBudget = require('../../models/SystemBudget')
+
 const BUDGET_FILE = path.join(__dirname, '../../.nd_budget.json')
 const DAILY_LIMIT = parseInt(process.env.ND_DAILY_LIMIT || '180', 10) // 180 of 200, buffer for testing
+
+let inMemoryNdBudget = {
+  date: new Date().toISOString().slice(0, 10),
+  used: 0,
+}
 
 // ── Budget tracking ────────────────────────────────────────────────
 
 function loadBudget() {
-  try {
-    const raw = fs.readFileSync(BUDGET_FILE, 'utf8')
-    const data = JSON.parse(raw)
-    const today = new Date().toISOString().slice(0, 10)
-    if (data.date !== today) return { date: today, used: 0 }
-    return data
-  } catch {
-    return { date: new Date().toISOString().slice(0, 10), used: 0 }
+  const today = new Date().toISOString().slice(0, 10)
+  if (inMemoryNdBudget.date !== today) {
+    inMemoryNdBudget = { date: today, used: 0 }
   }
+
+  try {
+    if (fs.existsSync(BUDGET_FILE)) {
+      const raw = fs.readFileSync(BUDGET_FILE, 'utf8')
+      const data = JSON.parse(raw)
+      if (data.date === today && data.used > inMemoryNdBudget.used) {
+        inMemoryNdBudget.used = data.used
+      }
+    }
+  } catch (err) {
+    // Ignore file read error, memory is fine
+  }
+
+  return inMemoryNdBudget
 }
 
 function saveBudget(budget) {
+  inMemoryNdBudget = budget
   try {
     fs.writeFileSync(BUDGET_FILE, JSON.stringify(budget), 'utf8')
   } catch (err) {
     console.warn('⚠️  ND budget file write failed:', err.message)
   }
+
+  // Asynchronously synchronize with MongoDB SystemBudget if DB is ready
+  SystemBudget.findOneAndUpdate(
+    { provider: 'newsdata' },
+    {
+      date: budget.date,
+      usedToday: budget.used,
+      dailyLimit: DAILY_LIMIT,
+      lastCalledAt: new Date(),
+    },
+    { upsert: true, new: true }
+  ).catch(() => {})
 }
 
 function getBudget() {
@@ -56,6 +85,10 @@ function consumeOne() {
 }
 
 function isLimitReached() {
+  const apiKey = process.env.NEWSDATA_API_KEY
+  if (!apiKey || apiKey.includes('your_') || apiKey.trim() === '') {
+    return true // Unconfigured key -> gracefully use curated news fallback
+  }
   return loadBudget().used >= DAILY_LIMIT
 }
 

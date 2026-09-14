@@ -22,6 +22,8 @@ const path = require('path')
 const BASE_URL = 'https://www.alphavantage.co/query'
 const TIMEOUT_MS = 10000
 
+const SystemBudget = require('../../models/SystemBudget')
+
 // Where we persist today's call count so restarts don't lose the tally.
 const BUDGET_FILE = path.join(__dirname, '../../.av_budget.json')
 
@@ -29,27 +31,53 @@ const BUDGET_FILE = path.join(__dirname, '../../.av_budget.json')
 // 2-call safety buffer for manual testing / health checks.
 const DAILY_LIMIT = parseInt(process.env.AV_DAILY_LIMIT || '23', 10)
 
+let inMemoryBudget = {
+  date: new Date().toISOString().slice(0, 10),
+  used: 0,
+}
+
 // ── Budget tracking ────────────────────────────────────────────────
 
 function loadBudget() {
-  try {
-    const raw = fs.readFileSync(BUDGET_FILE, 'utf8')
-    const data = JSON.parse(raw)
-    // Reset if it's a new calendar day (UTC).
-    const today = new Date().toISOString().slice(0, 10)
-    if (data.date !== today) return { date: today, used: 0 }
-    return data
-  } catch {
-    return { date: new Date().toISOString().slice(0, 10), used: 0 }
+  const today = new Date().toISOString().slice(0, 10)
+  if (inMemoryBudget.date !== today) {
+    inMemoryBudget = { date: today, used: 0 }
   }
+
+  try {
+    if (fs.existsSync(BUDGET_FILE)) {
+      const raw = fs.readFileSync(BUDGET_FILE, 'utf8')
+      const data = JSON.parse(raw)
+      if (data.date === today && data.used > inMemoryBudget.used) {
+        inMemoryBudget.used = data.used
+      }
+    }
+  } catch (err) {
+    // Ignore file read error, memory is fine
+  }
+
+  return inMemoryBudget
 }
 
 function saveBudget(budget) {
+  inMemoryBudget = budget
   try {
     fs.writeFileSync(BUDGET_FILE, JSON.stringify(budget), 'utf8')
   } catch (err) {
     console.warn('⚠️  AV budget file write failed:', err.message)
   }
+
+  // Asynchronously synchronize with MongoDB SystemBudget if DB is ready
+  SystemBudget.findOneAndUpdate(
+    { provider: 'alphavantage' },
+    {
+      date: budget.date,
+      usedToday: budget.used,
+      dailyLimit: DAILY_LIMIT,
+      lastCalledAt: new Date(),
+    },
+    { upsert: true, new: true }
+  ).catch(() => {})
 }
 
 function getBudget() {
@@ -64,6 +92,10 @@ function consumeOne() {
 }
 
 function isLimitReached() {
+  const apiKey = process.env.ALPHAVANTAGE_API_KEY
+  if (!apiKey || apiKey.includes('your_') || apiKey.trim() === '') {
+    return true // Unconfigured key -> seamlessly use resilient market simulation
+  }
   const budget = loadBudget()
   return budget.used >= DAILY_LIMIT
 }

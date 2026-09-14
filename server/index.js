@@ -24,9 +24,14 @@ app.set('io', io)
 connectDB()
 
 // ─── Middleware ───────────────────────────────────────────────────
+const { securityHeaders, sanitizeInputs, generalApiLimiter } = require('./middleware/security')
+
+app.use(securityHeaders)
 app.use(cors({ origin: allowedOrigins, credentials: true }))
-app.use(express.json({ limit: '10mb' }))
+app.use(express.json({ limit: '5mb' }))
 app.use(express.urlencoded({ extended: true }))
+app.use(sanitizeInputs)
+app.use('/api', generalApiLimiter)
 
 if (process.env.NODE_ENV !== 'production') {
   app.use((req, _res, next) => {
@@ -43,16 +48,28 @@ app.use('/api/watchlist', require('./routes/watchlist'))
 app.use('/api/alerts', require('./routes/alerts'))
 app.use('/api/news', require('./routes/news'))
 app.use('/api/signals', require('./routes/signals'))
+app.use('/api/analytics', require('./routes/analytics'))
+app.use('/api/leaderboard', require('./routes/leaderboard'))
+app.use('/api/notifications', require('./routes/notifications'))
 
 app.get('/api/health', (_req, res) => {
   const av = require('./services/aiProviders/alphaVantageProvider')
   const nd = require('./services/aiProviders/newsdataProvider')
   const avBudget = av.getBudget()
   const ndBudget = nd.getBudget()
+  const mongoose = require('mongoose')
+
   res.json({
     status: 'ok',
+    environment: process.env.NODE_ENV || 'development',
+    uptimeSeconds: Math.floor(process.uptime()),
     timestamp: new Date().toISOString(),
-    priceProvider: 'alphavantage',
+    database: {
+      connected: mongoose.connection.readyState === 1,
+      name: mongoose.connection.name,
+    },
+    memoryUsageMB: Math.round(process.memoryUsage().rss / 1024 / 1024),
+    priceProvider: 'alphavantage (with synthetic fallback)',
     newsProvider: 'newsdata.io',
     alphavantage: {
       usedToday: avBudget.used,

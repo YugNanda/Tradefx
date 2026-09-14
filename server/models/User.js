@@ -18,17 +18,34 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Password is required'],
+    required: [
+      function () {
+        return this.isNew || this.isModified('password')
+      },
+      'Password is required',
+    ],
     minlength: [8, 'Password must be at least 8 characters'],
-    select: false
+    select: false,
   },
   avatar: {
     type: String,
-    default: ''
+    default: '',
+  },
+  baseCurrency: {
+    type: String,
+    enum: ['INR', 'USD'],
+    default: 'INR',
   },
   virtualBalance: {
     type: Number,
-    default: 100000 // $1,00,000 virtual money
+    default: 100000,
+    min: [0, 'Virtual balance cannot fall below zero'],
+  },
+  stats: {
+    totalTrades: { type: Number, default: 0 },
+    winTrades: { type: Number, default: 0 },
+    lossTrades: { type: Number, default: 0 },
+    totalRealizedPnl: { type: Number, default: 0 },
   },
   watchlist: [{
     symbol: String,

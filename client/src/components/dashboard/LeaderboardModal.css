@@ -1,0 +1,77 @@
+.leaderboard-modal-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  width: 100%;
+  max-width: 620px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  padding: 24px;
+}
+
+.lb-table {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.lb-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  font-size: 13px;
+  gap: 12px;
+}
+
+.lb-rank {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 12px;
+  font-family: var(--mono);
+}
+
+.lb-rank-1 { background: #FEF3C7; color: #D97706; border: 1px solid #FDE68A; }
+.lb-rank-2 { background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; }
+.lb-rank-3 { background: #FFEDD5; color: #C2410C; border: 1px solid #FDBA74; }
+
+.lb-user-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.lb-name {
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.lb-sub {
+  font-size: 11px;
+  color: var(--text-4);
+}
+
+.lb-stats-col {
+  text-align: right;
+  font-family: var(--mono);
+}
+
+.lb-net {
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.lb-pnl {
+  font-size: 11px;
+  font-weight: 600;
+}

@@ -3,6 +3,47 @@
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.pf-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.pf-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pf-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.pf-tool-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: var(--r-sm);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-2);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  transition: all 0.15s;
+}
+
+.pf-tool-btn:hover {
+  color: var(--text-1);
+  border-color: var(--border-strong);
 }
 
 .pf-balance-row {
@@ -24,7 +65,7 @@
   align-items: center;
   gap: 5px;
   font-size: 10.5px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--text-4);
@@ -33,8 +74,8 @@
 
 .pf-value {
   font-family: var(--mono);
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 17px;
+  font-weight: 800;
   color: var(--text-1);
 }
 
@@ -43,17 +84,17 @@
 .pf-table-head,
 .pf-table-row {
   display: grid;
-  grid-template-columns: 1.4fr 0.8fr 1fr 1fr 1fr;
+  grid-template-columns: 1.4fr 0.8fr 1fr 1fr 1.1fr;
   align-items: center;
   gap: 8px;
-  padding: 8px 6px;
-  font-size: 12px;
+  padding: 10px 8px;
+  font-size: 12.5px;
 }
 
 .pf-table-head {
   color: var(--text-4);
   font-size: 10.5px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   border-bottom: 1px solid var(--border);
@@ -62,17 +103,42 @@
 .pf-table-row {
   border-bottom: 1px solid var(--border);
   text-align: left;
-  transition: background 0.1s;
+  transition: background 0.12s;
+  border-radius: 4px;
 }
 
 .pf-table-row:hover { background: var(--bg-subtle); }
 .pf-table-row:last-child { border-bottom: none; }
 
-.pf-sym { font-weight: 700; color: var(--text-1); font-family: var(--mono); }
-.mono { font-family: var(--mono); }
+.pf-sym-block {
+  display: flex;
+  flex-direction: column;
+}
 
-@media (max-width: 560px) {
+.pf-sym {
+  font-weight: 800;
+  color: var(--text-1);
+  font-family: var(--mono);
+}
+
+.pf-asset-curr {
+  font-size: 10.5px;
+  color: var(--text-4);
+}
+
+.pf-pnl-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.pf-pnl-pct {
+  font-size: 10px;
+  font-family: var(--mono);
+}
+
+@media (max-width: 600px) {
   .pf-balance-row { grid-template-columns: 1fr; }
   .pf-table-head { display: none; }
-  .pf-table-row { grid-template-columns: 1fr 1fr; row-gap: 4px; }
+  .pf-table-row { grid-template-columns: 1fr 1fr; row-gap: 6px; }
 }
