@@ -4,8 +4,6 @@ import Ticker from '../components/ticker/Ticker'
 import Hero from '../components/hero/Hero'
 import Features from '../components/features/Features'
 import Markets from '../components/features/Markets'
-import Testimonials from '../components/testimonials/Testimonials'
-import FAQ from '../components/faq/FAQ'
 import Footer from '../components/testimonials/Footer'
 import AuthModal from '../components/auth/AuthModal'
 
@@ -17,14 +15,14 @@ export default function LandingPage() {
 
   return (
     <div className="landing">
-      <Navbar onOpenAuth={openAuth} />
-      <Ticker />
+      <header className="landing-top-header">
+        <Ticker />
+        <Navbar onOpenAuth={openAuth} />
+      </header>
       <main>
         <Hero onOpenAuth={openAuth} />
         <Features />
         <Markets onOpenAuth={openAuth} />
-        <Testimonials />
-        <FAQ />
       </main>
       <Footer onOpenAuth={openAuth} />
 

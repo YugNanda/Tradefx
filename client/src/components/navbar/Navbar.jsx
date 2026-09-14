@@ -45,8 +45,7 @@ export default function Navbar({ onOpenAuth }) {
         <div className={`nav-links ${menuOpen ? 'open' : ''}`}>
           <button onClick={() => scrollTo('features')}>Features</button>
           <button onClick={() => scrollTo('markets')}>Markets</button>
-          <button onClick={() => scrollTo('testimonials')}>Reviews</button>
-          <button onClick={() => scrollTo('faq')}>FAQ</button>
+          <button onClick={() => navigate('/dashboard')}>Terminal</button>
         </div>
 
         {/* Right actions */}

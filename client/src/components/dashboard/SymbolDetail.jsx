@@ -16,6 +16,8 @@ import {
 } from 'lucide-react'
 import { marketApi, portfolioApi, signalsApi } from '../../api/marketApi'
 import { useLiveQuotes } from '../../context/MarketContext'
+import { useTheme } from '../../context/ThemeContext'
+import CandleChartSvg from './CandleChartSvg'
 import './SymbolDetail.css'
 
 const TF_INTERVALS = {
@@ -49,6 +51,8 @@ export default function SymbolDetail({ instrument, onTraded }) {
   const symbol = instrument?.symbol
   const live = useLiveQuotes(symbol ? [symbol] : [])
   const quote = symbol ? live[symbol] : null
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
 
   const [chartType, setChartType] = useState('candlestick') // 'candlestick' | 'area'
   const [timeframe, setTimeframe] = useState('1m') // '1m' | '5m' | '15m' | '1H' | '1D'
@@ -115,14 +119,16 @@ export default function SymbolDetail({ instrument, onTraded }) {
 
   // Update active open candle in real time on incoming socket tick
   useEffect(() => {
-    if (!quote?.price || candles.length === 0) return
+    const p = Number(quote?.price)
+    if (!Number.isFinite(p) || p <= 0 || candles.length === 0) return
     setCandles((prev) => {
       if (!prev.length) return prev
       const updated = [...prev]
       const last = { ...updated[updated.length - 1] }
-      const newHigh = Math.max(Number(last.y[1]), Number(quote.price))
-      const newLow = Math.min(Number(last.y[2]), Number(quote.price))
-      last.y = [Number(last.y[0]), newHigh, newLow, Number(quote.price)]
+      const open = Number(last.y[0]) || p
+      const high = Math.max(Number(last.y[1]) || p, p)
+      const low = Math.min(Number(last.y[2]) || p, p)
+      last.y = [open, high, low, p]
       updated[updated.length - 1] = last
       return updated
     })
@@ -202,12 +208,14 @@ export default function SymbolDetail({ instrument, onTraded }) {
     ]
   }, [candles, isCandle, symbol])
 
-  const isDark = typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'dark'
+  const textColor = isDark ? '#94A3B8' : '#586E75'
+  const gridColor = isDark ? 'rgba(241, 245, 249, 0.08)' : 'rgba(101, 123, 131, 0.16)'
+  const accentColor = isDark ? '#3B82F6' : '#268BD2'
 
   const chartOptions = useMemo(() => {
     return {
       chart: {
-        type: isCandle ? 'candlestick' : 'area',
+        type: 'area',
         height: 290,
         toolbar: {
           show: true,
@@ -221,30 +229,19 @@ export default function SymbolDetail({ instrument, onTraded }) {
             reset: true,
           },
         },
-        animations: { enabled: true, speed: 200 },
+        animations: { enabled: false },
         background: 'transparent',
       },
       theme: { mode: isDark ? 'dark' : 'light' },
-      stroke: { width: isCandle ? 1 : 2.2, curve: 'smooth' },
-      colors: isCandle ? undefined : [up ? '#10B981' : '#EF4444'],
-      fill: isCandle
-        ? undefined
-        : {
-            type: 'gradient',
-            gradient: {
-              shadeIntensity: 1,
-              opacityFrom: 0.45,
-              opacityTo: 0.05,
-              stops: [0, 95, 100],
-            },
-          },
-      plotOptions: {
-        candlestick: {
-          colors: {
-            upward: '#10B981',
-            downward: '#EF4444',
-          },
-          wick: { useFillColor: true },
+      stroke: { width: 2.2, curve: 'smooth' },
+      colors: [up ? '#10B981' : '#EF4444'],
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shadeIntensity: 1,
+          opacityFrom: 0.45,
+          opacityTo: 0.05,
+          stops: [0, 95, 100],
         },
       },
       xaxis: {
@@ -252,22 +249,22 @@ export default function SymbolDetail({ instrument, onTraded }) {
         labels: {
           datetimeUTC: false,
           format: timeframe === '1D' ? 'dd MMM HH:mm' : 'HH:mm',
-          style: { fontSize: '10px', colors: 'var(--text-4)' },
+          style: { fontSize: '10px', colors: textColor },
         },
-        crosshairs: { show: true, stroke: { color: 'var(--accent)', width: 1, dashArray: 3 } },
+        crosshairs: { show: true, stroke: { color: accentColor, width: 1, dashArray: 3 } },
         axisBorder: { show: false },
         axisTicks: { show: false },
       },
       yaxis: {
         tooltip: { enabled: true },
-        crosshairs: { show: true, stroke: { color: 'var(--accent)', width: 1, dashArray: 3 } },
+        crosshairs: { show: true, stroke: { color: accentColor, width: 1, dashArray: 3 } },
         labels: {
           formatter: (v) => (v != null ? Number(v).toFixed(v < 2 ? 4 : 2) : ''),
-          style: { fontSize: '10px', colors: 'var(--text-4)' },
+          style: { fontSize: '10px', colors: textColor },
         },
       },
       grid: {
-        borderColor: 'var(--border)',
+        borderColor: gridColor,
         strokeDashArray: 3,
         padding: { left: 8, right: 8, bottom: 4 },
       },
@@ -276,7 +273,7 @@ export default function SymbolDetail({ instrument, onTraded }) {
         x: { format: 'dd MMM yyyy HH:mm' },
       },
     }
-  }, [isCandle, isDark, up, timeframe])
+  }, [isDark, up, timeframe, textColor, gridColor, accentColor])
 
   // Simulated Institutional Order Book Depth (Bids & Asks around currentPrice)
   const orderBook = useMemo(() => {
@@ -410,16 +407,25 @@ export default function SymbolDetail({ instrument, onTraded }) {
 
       {/* Chart Canvas */}
       <div className="sd-chart">
-        {chartLoading ? (
+        {chartLoading && candles.length === 0 ? (
           <div className="sd-chart-empty">
             <Loader2 size={22} className="spin" />
             <span style={{ marginTop: 8 }}>Streaming institutional chart ticks…</span>
           </div>
+        ) : isCandle ? (
+          <CandleChartSvg
+            candles={candles}
+            currentPrice={currentPrice}
+            symbol={symbol}
+            isDark={isDark}
+            currency={instrument.currency}
+            timeframe={timeframe}
+          />
         ) : chartSeries.length > 0 && chartSeries[0].data.length > 0 ? (
           <ReactApexChart
             options={chartOptions}
             series={chartSeries}
-            type={isCandle ? 'candlestick' : 'area'}
+            type="area"
             height={290}
           />
         ) : (

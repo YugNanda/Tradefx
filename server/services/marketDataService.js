@@ -231,24 +231,33 @@ async function getOhlcHistory(symbol, timeframe = '1D') {
   const basePrice = quote.price || 100
   const candles = []
 
-  let count = 40
-  let intervalMs = 15 * 60 * 1000 // 15 min
+  let count = 36
+  let intervalMs = 60 * 1000 // default 1m
 
-  if (timeframe === '1D') {
-    count = 32
-    intervalMs = 15 * 60 * 1000 // 15m intervals
+  if (timeframe === '1m') {
+    count = 36
+    intervalMs = 60 * 1000 // 1 min intervals
+  } else if (timeframe === '5m') {
+    count = 36
+    intervalMs = 5 * 60 * 1000 // 5 min intervals
+  } else if (timeframe === '15m') {
+    count = 36
+    intervalMs = 15 * 60 * 1000 // 15 min intervals
+  } else if (timeframe === '1H') {
+    count = 36
+    intervalMs = 60 * 60 * 1000 // 1 hour intervals
+  } else if (timeframe === '1D') {
+    count = 36
+    intervalMs = 24 * 60 * 60 * 1000 // 1 day intervals
   } else if (timeframe === '1W') {
     count = 35
-    intervalMs = 4 * 60 * 60 * 1000 // 4h intervals
+    intervalMs = 7 * 24 * 60 * 60 * 1000 // 1 week
   } else if (timeframe === '1M') {
     count = 30
-    intervalMs = 24 * 60 * 60 * 1000 // 1 day
-  } else if (timeframe === '1Y') {
-    count = 52
-    intervalMs = 7 * 24 * 60 * 60 * 1000 // 1 week
+    intervalMs = 30 * 24 * 60 * 60 * 1000 // 1 month
   } else {
-    count = 45
-    intervalMs = 24 * 60 * 60 * 1000
+    count = 36
+    intervalMs = 60 * 1000
   }
 
   const now = Date.now()

@@ -2,83 +2,89 @@ import './Footer.css'
 
 export default function Footer({ onOpenAuth }) {
   return (
-    <>
-      {/* CTA Banner */}
-      <section className="cta-section">
-        <div className="cta-inner">
-          <div className="cta-badge">Free forever · No credit card</div>
-          <h2 className="cta-title">Ready to trade smarter?</h2>
-          <p className="cta-sub">Join 1.2M+ traders. Get ₹10,00,000 in virtual capital and start practicing with real market data — free.</p>
-          <div className="cta-actions">
-            <button className="cta-btn-primary" onClick={() => onOpenAuth('signup')}>
-              Create free account
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
+    <footer className="footer">
+      {/* System Status Bar */}
+      <div className="footer-status-bar">
+        <div className="footer-status-inner">
+          <div className="fs-item">
+            <span className="fs-dot" />
+            <span className="fs-text">All Core Trading Engines Operational</span>
+          </div>
+          <div className="fs-sep" />
+          <div className="fs-item">
+            <span className="fs-label">Stream Latency:</span>
+            <span className="fs-value mono">1.5s Broadcast</span>
+          </div>
+          <div className="fs-sep" />
+          <div className="fs-item">
+            <span className="fs-label">Uptime SLA:</span>
+            <span className="fs-value mono">99.99% Guaranteed</span>
+          </div>
+          <div className="fs-sep" />
+          <div className="fs-item">
+            <span className="fs-label">Security:</span>
+            <span className="fs-value">256-bit TLS 1.3 / OTP 2FA</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="footer-inner">
+        <div className="footer-brand">
+          <div className="footer-logo">
+            <div className="footer-logo-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <path d="M3 17L9 11L13 15L21 6" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                <circle cx="21" cy="6" r="2.5" fill="white"/>
               </svg>
-            </button>
-            <button className="cta-btn-ghost" onClick={() => onOpenAuth('login')}>
-              Sign in instead
-            </button>
+            </div>
+            <span>TradeX Terminal</span>
           </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="footer">
-        <div className="footer-inner">
-          <div className="footer-brand">
-            <div className="footer-logo">
-              <div className="footer-logo-icon">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                  <path d="M3 17L9 11L13 15L21 6" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <circle cx="21" cy="6" r="2.5" fill="white"/>
-                </svg>
-              </div>
-              TradeX
-            </div>
-            <p className="footer-tagline">Professional trading platform for Indian and global markets.</p>
-            <div className="footer-secure">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="11" width="18" height="11" rx="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-              256-bit SSL secured
-            </div>
-          </div>
-
-          <div className="footer-links">
-            <div className="fl-group">
-              <div className="fl-title">Markets</div>
-              {['NSE / BSE', 'NYSE / NASDAQ', 'Cryptocurrency', 'Forex', 'Commodities'].map(l => (
-                <a key={l} href="#">{l}</a>
-              ))}
-            </div>
-            <div className="fl-group">
-              <div className="fl-title">Platform</div>
-              {['Features', 'Pricing', 'API Docs', 'Mobile App', 'Changelog'].map(l => (
-                <a key={l} href="#">{l}</a>
-              ))}
-            </div>
-            <div className="fl-group">
-              <div className="fl-title">Company</div>
-              {['About', 'Blog', 'Careers', 'Press', 'Contact'].map(l => (
-                <a key={l} href="#">{l}</a>
-              ))}
-            </div>
-            <div className="fl-group">
-              <div className="fl-title">Legal</div>
-              {['Privacy Policy', 'Terms of Service', 'Cookie Policy', 'Disclaimer'].map(l => (
-                <a key={l} href="#">{l}</a>
-              ))}
-            </div>
+          <p className="footer-tagline">
+            Institutional-grade multi-asset paper trading terminal and quantitative strategy simulation engine.
+          </p>
+          <div className="footer-auth-row">
+            <button className="footer-link-btn" onClick={() => onOpenAuth('login')}>Institutional Sign In →</button>
           </div>
         </div>
 
-        <div className="footer-bottom">
-          <span>© 2024 TradeX Technologies Pvt. Ltd. All rights reserved.</span>
-          <span className="footer-disclaimer">For educational purposes only. Not SEBI registered investment advice.</span>
+        <div className="footer-links">
+          <div className="fl-group">
+            <div className="fl-title">Markets Matrix</div>
+            {['NSE / BSE Equities', 'NASDAQ / NYSE Global', 'Cryptocurrency Spot', 'Forex Major Pairs', 'MCX Commodities'].map(l => (
+              <span key={l} className="fl-item">{l}</span>
+            ))}
+          </div>
+          <div className="fl-group">
+            <div className="fl-title">Terminal Engine</div>
+            {['WebSocket 1.5s Stream', 'Candlestick OHLC HUD', 'Count-to-Bar Timer', 'Quant Technical Signals', 'Order Book Depth'].map(l => (
+              <span key={l} className="fl-item">{l}</span>
+            ))}
+          </div>
+          <div className="fl-group">
+            <div className="fl-title">Platform Specs</div>
+            {['Virtual Sandbox (₹10L)', 'Cryptographic OTP 2FA', 'Audit Ledger Export', 'Global Leaderboards', 'Multi-Asset Watchlist'].map(l => (
+              <span key={l} className="fl-item">{l}</span>
+            ))}
+          </div>
+          <div className="fl-group">
+            <div className="fl-title">Compliance</div>
+            {['Terms of Service', 'Privacy Policy', 'Security Architecture', 'Risk Disclosure', 'Regulatory Sandbox'].map(l => (
+              <span key={l} className="fl-item">{l}</span>
+            ))}
+          </div>
         </div>
-      </footer>
-    </>
+      </div>
+
+      <div className="footer-bottom">
+        <div className="footer-bottom-inner">
+          <div className="footer-copy">
+            © {new Date().getFullYear()} TradeX Institutional Technologies Inc. All rights reserved.
+          </div>
+          <div className="footer-disclaimer">
+            Notice: TradeX is a quantitative trading simulation and educational execution environment. All portfolios utilize simulated virtual capital without real financial risk. Market quotes are generated via low-latency algorithmic streaming for backtesting and strategy evaluation. Not investment advice or a registered broker-dealer.
+          </div>
+        </div>
+      </div>
+    </footer>
   )
 }

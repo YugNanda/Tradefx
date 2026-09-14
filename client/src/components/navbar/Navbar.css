@@ -1,20 +1,28 @@
-.navbar {
+.landing-top-header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-  padding: 0 24px;
-  height: 60px;
-  background: transparent;
-  transition: background 0.2s, box-shadow 0.2s, backdrop-filter 0.2s;
-}
-
-.navbar.scrolled {
   background: var(--nav-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 1px 0 var(--border);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.navbar {
+  position: relative;
+  width: 100%;
+  padding: 0 24px;
+  height: 56px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+}
+
+.navbar.scrolled {
+  background: transparent;
 }
 
 .nav-inner {

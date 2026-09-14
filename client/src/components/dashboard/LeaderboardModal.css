@@ -10,22 +10,68 @@
   padding: 24px;
 }
 
+.lb-subtitle {
+  font-size: 11.5px;
+  color: var(--text-4);
+  margin-top: 3px;
+}
+
 .lb-table {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-top: 14px;
+  gap: 8px;
+  margin-top: 16px;
 }
 
 .lb-row {
   display: flex;
   align-items: center;
-  padding: 10px 14px;
+  padding: 11px 15px;
   background: var(--bg-subtle);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   font-size: 13px;
-  gap: 12px;
+  gap: 14px;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.lb-row:hover {
+  border-color: var(--accent);
+}
+
+.lb-live-user {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.lb-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.lb-tier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-light);
+  border: 1px solid var(--border);
+  padding: 1px 7px;
+  border-radius: var(--r-full);
+}
+
+.lb-you-badge {
+  font-size: 9px;
+  font-weight: 800;
+  color: white;
+  background: var(--accent);
+  padding: 1px 5px;
+  border-radius: var(--r-full);
+  letter-spacing: 0.05em;
 }
 
 .lb-rank {
@@ -39,6 +85,7 @@
   font-weight: 800;
   font-size: 12px;
   font-family: var(--mono);
+  flex-shrink: 0;
 }
 
 .lb-rank-1 { background: #FEF3C7; color: #D97706; border: 1px solid #FDE68A; }
@@ -49,6 +96,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .lb-name {
@@ -58,7 +106,7 @@
 
 .lb-sub {
   font-size: 11px;
-  color: var(--text-4);
+  color: var(--text-3);
 }
 
 .lb-stats-col {
