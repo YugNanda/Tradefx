@@ -47,7 +47,7 @@ function formatCountdown(sec) {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
 }
 
-export default function SymbolDetail({ instrument, onTraded }) {
+export default function SymbolDetail({ instrument, onTraded, refreshKey }) {
   const symbol = instrument?.symbol
   const live = useLiveQuotes(symbol ? [symbol] : [])
   const quote = symbol ? live[symbol] : null
@@ -59,15 +59,42 @@ export default function SymbolDetail({ instrument, onTraded }) {
   const [candles, setCandles] = useState([])
   const [chartLoading, setChartLoading] = useState(false)
 
+  // Technical Indicators state
+  const [indicators, setIndicators] = useState({ sma: false, ema: false, bb: false, rsi: false })
+  const toggleIndicator = (name) => setIndicators((prev) => ({ ...prev, [name]: !prev[name] }))
+
+  // Active user position for this symbol
+  const [activeHolding, setActiveHolding] = useState(null)
+  const [closingTrade, setClosingTrade] = useState(false)
+
   // ── "Count to Bar" Countdown Timer ──
   const [barSecondsLeft, setBarSecondsLeft] = useState(() => getSecondsToNextBar('1m'))
 
   const [signal, setSignal] = useState(null)
   const [signalLoading, setSignalLoading] = useState(false)
 
-  const [orderType, setOrderType] = useState('MARKET') // 'MARKET' | 'LIMIT'
+  const [orderType, setOrderType] = useState('MARKET') // 'MARKET' | 'LIMIT' | 'CLOSE'
   const [qty, setQty] = useState(1)
   const [tradeLoading, setTradeLoading] = useState(false)
+
+  // Fetch active holding for current symbol
+  const loadActiveHolding = useCallback(() => {
+    if (!symbol) {
+      setActiveHolding(null)
+      return
+    }
+    portfolioApi
+      .get()
+      .then((data) => {
+        const found = (data.holdings || []).find((h) => h.symbol === symbol)
+        setActiveHolding(found || null)
+      })
+      .catch(() => {})
+  }, [symbol])
+
+  useEffect(() => {
+    loadActiveHolding()
+  }, [loadActiveHolding, refreshKey])
 
   // Load OHLC historical candle sequence
   const loadCandleHistory = useCallback((sym, tf) => {
@@ -147,6 +174,28 @@ export default function SymbolDetail({ instrument, onTraded }) {
     }
   }, [symbol])
 
+  const handleCloseCurrentPosition = async () => {
+    if (!activeHolding) return
+    setClosingTrade(true)
+    try {
+      const res = await portfolioApi.close(activeHolding.symbol, activeHolding.quantity, activeHolding.side)
+      const pnl = res.realizedPnl ?? 0
+      const isWin = pnl >= 0
+      const curr = (res.baseCurrency || 'INR') === 'USD' ? '$' : '₹'
+      toast.success(
+        `Closed ${activeHolding.side === 'SELL' ? 'SHORT' : 'LONG'} ${activeHolding.quantity} ${activeHolding.symbol}. Realized P&L: ${
+          isWin ? '+' : ''
+        }${curr}${pnl.toLocaleString(undefined, { minimumFractionDigits: 2 })}`
+      )
+      loadActiveHolding()
+      onTraded?.()
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to close position')
+    } finally {
+      setClosingTrade(false)
+    }
+  }
+
   const trade = async (side) => {
     if (!symbol || !(qty > 0)) return
     setTradeLoading(true)
@@ -157,11 +206,23 @@ export default function SymbolDetail({ instrument, onTraded }) {
       const costDesc =
         side === 'BUY'
           ? `Cost: ${baseCurr} ${result.totalDeduction?.toLocaleString()}`
-          : `Net: ${baseCurr} ${result.netProceeds?.toLocaleString()}`
+          : result.isShort
+          ? `Margin Collateral: ${baseCurr} ${result.totalDeduction?.toLocaleString()}`
+          : `Proceeds: ${baseCurr} ${result.netProceeds?.toLocaleString()}`
+
+      const actionTitle =
+        side === 'BUY'
+          ? result.covered
+            ? 'Covered Short Position'
+            : 'Executed Buy / Long'
+          : result.isShort
+          ? 'Executed Short Sell'
+          : 'Executed Sell / Close Long'
 
       toast.success(
-        `${side === 'BUY' ? 'Executed Buy' : 'Executed Sell'}: ${qty} ${symbol} @ ${result.executedPrice.toFixed(2)} (${costDesc})`
+        `${actionTitle}: ${qty} ${symbol} @ ${result.executedPrice.toFixed(2)} (${costDesc})`
       )
+      loadActiveHolding()
       onTraded?.()
     } catch (err) {
       toast.error(err.response?.data?.message || 'Trade execution failed')
@@ -373,6 +434,39 @@ export default function SymbolDetail({ instrument, onTraded }) {
           ))}
         </div>
 
+        {/* Technical Indicators Selector */}
+        <div className="sd-ctrl-group sd-indicators-group">
+          <span className="sd-indicators-label">Indicators:</span>
+          <button
+            className={`sd-ind-btn ${indicators.sma ? 'active-sma' : ''}`}
+            onClick={() => toggleIndicator('sma')}
+            title="Toggle SMA 20 (Simple Moving Average)"
+          >
+            <span className="sd-ind-dot" style={{ background: '#F59E0B' }} /> SMA 20
+          </button>
+          <button
+            className={`sd-ind-btn ${indicators.ema ? 'active-ema' : ''}`}
+            onClick={() => toggleIndicator('ema')}
+            title="Toggle EMA 50 (Exponential Moving Average)"
+          >
+            <span className="sd-ind-dot" style={{ background: '#06B6D4' }} /> EMA 50
+          </button>
+          <button
+            className={`sd-ind-btn ${indicators.bb ? 'active-bb' : ''}`}
+            onClick={() => toggleIndicator('bb')}
+            title="Toggle Bollinger Bands (20, 2)"
+          >
+            <span className="sd-ind-dot" style={{ background: '#60A5FA' }} /> BB (20,2)
+          </button>
+          <button
+            className={`sd-ind-btn ${indicators.rsi ? 'active-rsi' : ''}`}
+            onClick={() => toggleIndicator('rsi')}
+            title="Toggle RSI 14 (Relative Strength Index)"
+          >
+            <span className="sd-ind-dot" style={{ background: '#A855F7' }} /> RSI 14
+          </button>
+        </div>
+
         {/* ⏱️ "Count to Bar" Countdown Timer Badge */}
         <div className="sd-count-to-bar-badge" title="Countdown to active candle close">
           <Clock size={13} className="sd-bar-clock-icon" />
@@ -420,6 +514,8 @@ export default function SymbolDetail({ instrument, onTraded }) {
             isDark={isDark}
             currency={instrument.currency}
             timeframe={timeframe}
+            indicators={indicators}
+            onToggleIndicator={toggleIndicator}
           />
         ) : chartSeries.length > 0 && chartSeries[0].data.length > 0 ? (
           <ReactApexChart
@@ -452,61 +548,195 @@ export default function SymbolDetail({ instrument, onTraded }) {
               >
                 Limit Order
               </button>
+              <button
+                className={`sd-ot-btn ${orderType === 'CLOSE' ? 'active' : ''}`}
+                onClick={() => setOrderType('CLOSE')}
+                style={{
+                  color: orderType === 'CLOSE' ? 'white' : activeHolding ? '#EF4444' : undefined,
+                  background: orderType === 'CLOSE' ? '#EF4444' : undefined,
+                  fontWeight: activeHolding ? 700 : 500,
+                }}
+                title="Close Active Trade / Position"
+              >
+                Close Trade {activeHolding ? '●' : ''}
+              </button>
             </div>
           </div>
 
-          <div className="sd-order-form">
-            <div className="sd-qty-wrapper">
-              <input
-                type="number"
-                min="0.0001"
-                step="any"
-                value={qty}
-                onChange={(e) => setQty(e.target.value)}
-                className="sd-qty"
-                placeholder="Qty"
-              />
-              {[1, 5, 10, 50].map((quick) => (
+          {/* Active Open Position Banner (Always visible in Market & Limit view if user holds a position) */}
+          {activeHolding && orderType !== 'CLOSE' && (
+            <div className="sd-active-position-banner">
+              <div className="sd-ap-left">
+                <span className={`sd-ap-badge ${activeHolding.side === 'SELL' ? 'sell' : 'buy'}`}>
+                  {activeHolding.side === 'SELL' ? 'ACTIVE SHORT' : 'ACTIVE LONG'}
+                </span>
+                <span className="sd-ap-info">
+                  <strong>{activeHolding.quantity}</strong> {activeHolding.symbol} @ avg{' '}
+                  <strong>{activeHolding.avgBuyPrice?.toFixed(2)}</strong>
+                </span>
+                {activeHolding.unrealizedPnlBase != null && (
+                  <span
+                    className={`sd-ap-pnl mono ${activeHolding.unrealizedPnlBase >= 0 ? 'gain' : 'loss'}`}
+                  >
+                    {activeHolding.unrealizedPnlBase >= 0 ? '+' : ''}
+                    {activeHolding.unrealizedPnlBase.toFixed(2)} ({activeHolding.unrealizedPnlBase >= 0 ? '+' : ''}
+                    {activeHolding.pnlPercent}%)
+                  </span>
+                )}
+              </div>
+              <button
+                className="sd-ap-close-btn"
+                disabled={closingTrade}
+                onClick={handleCloseCurrentPosition}
+              >
+                {closingTrade ? <Loader2 size={13} className="spin" /> : null}
+                {closingTrade ? 'Closing Trade…' : 'Close Trade (Market)'}
+              </button>
+            </div>
+          )}
+
+          {/* CLOSE TRADE TAB CONTENT */}
+          {orderType === 'CLOSE' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '6px 0' }}>
+              {activeHolding ? (
+                <>
+                  <div
+                    style={{
+                      background: 'var(--bg-card)',
+                      border: '1px solid var(--border-strong)',
+                      borderRadius: 'var(--r-sm)',
+                      padding: '12px 14px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 8,
+                      fontSize: '12px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ color: 'var(--text-3)' }}>Position Type:</span>
+                      <span className={`sd-ap-badge ${activeHolding.side === 'SELL' ? 'sell' : 'buy'}`}>
+                        {activeHolding.side === 'SELL' ? 'SHORT (SELL)' : 'LONG (BUY)'} ({activeHolding.quantity}{' '}
+                        {activeHolding.symbol})
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ color: 'var(--text-3)' }}>Average Entry Price:</span>
+                      <span className="mono bold">
+                        {activeHolding.avgBuyPrice?.toFixed(2)} {instrument.currency}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ color: 'var(--text-3)' }}>Current Market Price:</span>
+                      <span className="mono bold">
+                        {currentPrice?.toFixed(2)} {instrument.currency}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ color: 'var(--text-3)' }}>Live Unrealized P&amp;L:</span>
+                      <span
+                        className={`mono bold ${activeHolding.unrealizedPnlBase >= 0 ? 'gain' : 'loss'}`}
+                        style={{ fontSize: '13px' }}
+                      >
+                        {activeHolding.unrealizedPnlBase >= 0 ? '+' : ''}
+                        {activeHolding.unrealizedPnlBase} ({activeHolding.pnlPercent}%)
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    className="sd-btn sell"
+                    style={{ width: '100%', height: 42, fontSize: '13.5px', fontWeight: 800 }}
+                    disabled={closingTrade}
+                    onClick={handleCloseCurrentPosition}
+                  >
+                    {closingTrade ? <Loader2 size={14} className="spin" /> : null}
+                    {closingTrade ? 'Closing Trade…' : 'Close Position (Market Order)'}
+                  </button>
+                  <span style={{ fontSize: '11px', color: 'var(--text-4)', textAlign: 'center' }}>
+                    💡 Realized profit or loss will immediately reflect in your Available Capital and Net Worth.
+                  </span>
+                </>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '24px 12px', color: 'var(--text-3)', fontSize: '12px' }}>
+                  <p style={{ fontWeight: 700, color: 'var(--text-1)', fontSize: '13px', marginBottom: 4 }}>
+                    No Active Trade in {symbol}
+                  </p>
+                  <p style={{ fontSize: '11.5px', color: 'var(--text-4)', marginBottom: 14 }}>
+                    You currently do not have an open position in {symbol}. Use <strong>Market Order</strong> to place
+                    a Buy (Long) or Sell (Short) trade.
+                  </p>
+                  <button
+                    className="sd-ot-btn active"
+                    style={{ padding: '6px 14px', fontSize: '12px' }}
+                    onClick={() => setOrderType('MARKET')}
+                  >
+                    Go to Market Order
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* MARKET / LIMIT ORDER FORM */
+            <div className="sd-order-form">
+              <div className="sd-qty-wrapper">
+                <input
+                  type="number"
+                  min="0.0001"
+                  step="any"
+                  value={qty}
+                  onChange={(e) => setQty(e.target.value)}
+                  className="sd-qty"
+                  placeholder="Qty"
+                />
+                {[1, 5, 10, 50].map((quick) => (
+                  <button
+                    key={quick}
+                    type="button"
+                    className="sd-quick-btn"
+                    onClick={() => setQty(quick)}
+                  >
+                    +{quick}
+                  </button>
+                ))}
+              </div>
+
+              <div className="sd-order-estimate">
+                Est. Total:{' '}
+                <strong>
+                  {instrument.currency}{' '}
+                  {rawSubtotal.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                </strong>
+                <span className="sd-fee-tag">
+                  {' '}
+                  (Fee 0.05%: {instrument.currency} {estimatedFee})
+                </span>
+              </div>
+
+              <div className="sd-btn-group">
                 <button
-                  key={quick}
-                  type="button"
-                  className="sd-quick-btn"
-                  onClick={() => setQty(quick)}
+                  className="sd-btn buy"
+                  disabled={tradeLoading || !(Number(qty) > 0)}
+                  onClick={() => trade('BUY')}
+                  title="Buy / Long: Profit when asset price rises"
                 >
-                  +{quick}
+                  {tradeLoading ? <Loader2 size={14} className="spin" /> : <Zap size={14} />} Buy / Long
                 </button>
-              ))}
+                <button
+                  className="sd-btn sell"
+                  disabled={tradeLoading || !(Number(qty) > 0)}
+                  onClick={() => trade('SELL')}
+                  title="Sell / Short: Profit when asset price falls (or closes Long)"
+                >
+                  {tradeLoading ? <Loader2 size={14} className="spin" /> : <Flame size={14} />} Sell / Short
+                </button>
+              </div>
+              <div className="sd-trade-hint">
+                <span>
+                  💡 <strong>Long:</strong> Profit if asset rises · <strong>Short:</strong> Sell borrowed asset to
+                  profit if price drops
+                </span>
+              </div>
             </div>
-
-            <div className="sd-order-estimate">
-              Est. Total:{' '}
-              <strong>
-                {instrument.currency}{' '}
-                {rawSubtotal.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-              </strong>
-              <span className="sd-fee-tag">
-                {' '}
-                (Fee 0.05%: {instrument.currency} {estimatedFee})
-              </span>
-            </div>
-
-            <div className="sd-btn-group">
-              <button
-                className="sd-btn buy"
-                disabled={tradeLoading || !(Number(qty) > 0)}
-                onClick={() => trade('BUY')}
-              >
-                {tradeLoading ? <Loader2 size={14} className="spin" /> : <Zap size={14} />} Buy / Long
-              </button>
-              <button
-                className="sd-btn sell"
-                disabled={tradeLoading || !(Number(qty) > 0)}
-                onClick={() => trade('SELL')}
-              >
-                {tradeLoading ? <Loader2 size={14} className="spin" /> : <Flame size={14} />} Sell / Short
-              </button>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Live Order Book Depth Ladder */}

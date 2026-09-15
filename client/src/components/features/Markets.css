@@ -1,6 +1,7 @@
 .markets {
-  padding: 96px 24px;
+  padding: 80px 24px;
   background: var(--bg-subtle);
+  position: relative;
 }
 
 /* Category Bar */
@@ -9,11 +10,11 @@
   justify-content: center;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
 }
 
 .cat-btn {
-  padding: 8px 16px;
+  padding: 9px 18px;
   border-radius: var(--r-full);
   font-size: 13px;
   font-weight: 600;
@@ -21,44 +22,47 @@
   background: var(--bg-card);
   border: 1px solid var(--border);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--shadow-sm);
 }
 
 .cat-btn:hover {
   color: var(--text-1);
   border-color: var(--border-strong);
+  transform: translateY(-1px);
 }
 
 .cat-btn.active {
   background: var(--accent);
   color: white;
   border-color: var(--accent);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
 }
 
 .markets-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-  margin-bottom: 32px;
+  gap: 16px;
+  margin-bottom: 36px;
 }
 
 .market-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
-  padding: 18px 16px 14px;
-  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
-  animation: fadeUp 0.5s ease both;
+  padding: 20px 18px 16px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: fadeUp 0.45s ease both;
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
 .market-card:hover {
   border-color: var(--accent);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 0 15px rgba(37, 99, 235, 0.15);
-  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg), 0 0 20px rgba(37, 99, 235, 0.12);
+  transform: translateY(-4px);
 }
 
 .mc-action-overlay {

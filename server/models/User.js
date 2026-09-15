@@ -57,8 +57,10 @@ const userSchema = new mongoose.Schema({
   portfolio: [{
     symbol: String,
     name: String,
+    side: { type: String, enum: ['BUY', 'SELL'], default: 'BUY' }, // BUY = LONG, SELL = SHORT
     quantity: Number,
-    avgBuyPrice: Number,
+    avgBuyPrice: Number, // Entry price
+    collateral: { type: Number, default: 0 }, // Margin collateral locked in base currency
     boughtAt: { type: Date, default: Date.now }
   }],
   isVerified: {

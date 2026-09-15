@@ -4,7 +4,7 @@ const transactionSchema = new mongoose.Schema(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     symbol: { type: String, required: true, uppercase: true },
-    side: { type: String, enum: ['BUY', 'SELL'], required: true },
+    side: { type: String, enum: ['BUY', 'SELL', 'SHORT', 'COVER', 'CLOSE'], required: true },
     quantity: { type: Number, required: true },
     price: { type: Number, required: true }, // execution price at time of trade (in assetCurrency)
     total: { type: Number, required: true }, // quantity * price (in assetCurrency)

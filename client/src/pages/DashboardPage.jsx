@@ -35,7 +35,15 @@ export default function DashboardPage() {
   const [unreadNotifs, setUnreadNotifs] = useState(0)
 
   useEffect(() => {
-    marketApi.listSymbols().then(setCatalog).catch(() => {})
+    marketApi
+      .listSymbols()
+      .then((symbols) => {
+        setCatalog(symbols || [])
+        if (symbols && symbols.length > 0) {
+          setSelected((prev) => prev || symbols[0])
+        }
+      })
+      .catch(() => {})
     notificationsApi
       .get()
       .then((res) => setUnreadNotifs(res.unreadCount || 0))
@@ -164,11 +172,16 @@ export default function DashboardPage() {
 
         <div className="dash-grid">
           <div className="dash-col-main">
-            <SymbolDetail instrument={selected} onTraded={() => setRefreshKey((k) => k + 1)} />
+            <SymbolDetail
+              instrument={selected}
+              onTraded={() => setRefreshKey((k) => k + 1)}
+              refreshKey={refreshKey}
+            />
             <PortfolioPanel
               onSelect={selectSymbol}
               refreshKey={refreshKey}
               onOpenAnalytics={() => setShowAnalytics(true)}
+              onTraded={() => setRefreshKey((k) => k + 1)}
             />
             <NewsPanel symbol={selected?.symbol} />
           </div>

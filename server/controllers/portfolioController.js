@@ -34,6 +34,17 @@ exports.sell = async (req, res) => {
   }
 }
 
+exports.closePosition = async (req, res) => {
+  try {
+    const { symbol, quantity, side } = req.body
+    if (!symbol) return res.status(400).json({ message: 'symbol is required' })
+    const result = await portfolioService.closePosition(req.user.id, symbol, quantity, side)
+    res.json(result)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+}
+
 exports.getTransactions = async (req, res) => {
   try {
     const transactions = await Transaction.find({ user: req.user.id }).sort({ createdAt: -1 }).limit(100)

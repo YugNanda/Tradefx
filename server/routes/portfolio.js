@@ -10,5 +10,6 @@ router.get('/', ctrl.getPortfolio)
 router.get('/transactions', ctrl.getTransactions)
 router.post('/buy', tradeOrderLimiter, ctrl.buy)
 router.post('/sell', tradeOrderLimiter, ctrl.sell)
+router.post('/close', tradeOrderLimiter, ctrl.closePosition)
 
 module.exports = router

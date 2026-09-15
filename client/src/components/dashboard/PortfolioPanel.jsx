@@ -5,7 +5,7 @@ import { useLiveQuotes } from '../../context/MarketContext'
 import toast from 'react-hot-toast'
 import './PortfolioPanel.css'
 
-export default function PortfolioPanel({ onSelect, refreshKey, onOpenAnalytics }) {
+export default function PortfolioPanel({ onSelect, refreshKey, onOpenAnalytics, onTraded }) {
   const [data, setData] = useState({
     virtualBalance: 0,
     baseCurrency: 'INR',
@@ -16,6 +16,7 @@ export default function PortfolioPanel({ onSelect, refreshKey, onOpenAnalytics }
   })
 
   const [tickFlashes, setTickFlashes] = useState({}) // symbol -> 'gain' | 'loss'
+  const [closingSymbol, setClosingSymbol] = useState(null)
   const prevPricesRef = useRef({})
 
   useEffect(() => {
@@ -70,7 +71,7 @@ export default function PortfolioPanel({ onSelect, refreshKey, onOpenAnalytics }
     })}`
   }
 
-  // Dynamic real-time calculation of live holdings and portfolio aggregates
+  // Dynamic real-time calculation of live holdings and portfolio aggregates (Long & Short)
   const { calculatedHoldings, liveTotalMarketValue, liveTotalUnrealizedPnl, liveTotalNetWorth } =
     useMemo(() => {
       const baseCurr = data.baseCurrency || 'INR'
@@ -80,7 +81,8 @@ export default function PortfolioPanel({ onSelect, refreshKey, onOpenAnalytics }
       const calculated = (data.holdings || []).map((h) => {
         const live = liveQuotes[h.symbol]
         const currentPrice = live?.price ?? h.currentPrice ?? h.avgBuyPrice
-        const diffPerUnit = currentPrice - h.avgBuyPrice
+        const isShort = h.side === 'SELL'
+        const diffPerUnit = isShort ? (h.avgBuyPrice - currentPrice) : (currentPrice - h.avgBuyPrice)
         const unrealizedAsset = diffPerUnit * h.quantity
         const pnlPct = h.avgBuyPrice > 0 ? (diffPerUnit / h.avgBuyPrice) * 100 : 0
 
@@ -92,13 +94,17 @@ export default function PortfolioPanel({ onSelect, refreshKey, onOpenAnalytics }
         }
 
         const unrealizedBase = unrealizedAsset * fxRate
-        const marketValueBase = currentPrice * h.quantity * fxRate
+        const collateralBase = h.collateral || (h.avgBuyPrice * h.quantity * fxRate)
+        const marketValueBase = isShort
+          ? Math.max(0, collateralBase + unrealizedBase)
+          : currentPrice * h.quantity * fxRate
 
         totalVal += marketValueBase
         totalPnl += unrealizedBase
 
         return {
           ...h,
+          isShort,
           currentPrice,
           unrealizedPnlBase: unrealizedBase,
           pnlPercent: Number(pnlPct.toFixed(2)),
@@ -123,6 +129,28 @@ export default function PortfolioPanel({ onSelect, refreshKey, onOpenAnalytics }
       toast.success('Transaction ledger downloaded')
     } catch {
       toast.error('Failed to export ledger')
+    }
+  }
+
+  const handleClosePosition = async (e, holding) => {
+    e.stopPropagation()
+    setClosingSymbol(holding.symbol)
+    try {
+      const res = await portfolioApi.close(holding.symbol, holding.quantity, holding.side)
+      const pnl = res.realizedPnl ?? 0
+      const isWin = pnl >= 0
+      const curr = (res.baseCurrency || data.baseCurrency) === 'USD' ? '$' : '₹'
+      toast.success(
+        `Closed ${holding.side === 'SELL' ? 'SHORT' : 'LONG'} ${holding.quantity} ${holding.symbol} @ ${
+          res.executedPrice?.toFixed(2) || 'market'
+        }. Realized P&L: ${isWin ? '+' : ''}${curr}${pnl.toLocaleString(undefined, { minimumFractionDigits: 2 })}`
+      )
+      portfolioApi.get().then(setData).catch(() => {})
+      onTraded?.()
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to close trade')
+    } finally {
+      setClosingSymbol(null)
     }
   }
 
@@ -179,9 +207,17 @@ export default function PortfolioPanel({ onSelect, refreshKey, onOpenAnalytics }
       </div>
 
       {calculatedHoldings.length === 0 ? (
-        <p className="side-panel-empty">
-          No open positions. Search any symbol above to place institutional market or limit orders.
-        </p>
+        <div className="side-panel-empty" style={{ textAlign: 'center', padding: '24px 16px' }}>
+          <p style={{ fontWeight: 700, color: 'var(--text-1)', marginBottom: 4, fontSize: '13.5px' }}>
+            No Open Positions
+          </p>
+          <p style={{ fontSize: '12px', color: 'var(--text-3)', maxWidth: '440px', margin: '0 auto 8px' }}>
+            You currently have 0 open positions. Enter a <strong>Buy (Long)</strong> or <strong>Sell (Short)</strong> order above to start trading.
+          </p>
+          <p style={{ fontSize: '11px', color: 'var(--text-4)' }}>
+            Active trades appear here with real-time P&amp;L and a red <strong>[Close Trade]</strong> button to realize your profit or loss.
+          </p>
+        </div>
       ) : (
         <div className="pf-table">
           <div className="pf-table-head">
@@ -190,20 +226,27 @@ export default function PortfolioPanel({ onSelect, refreshKey, onOpenAnalytics }
             <span>Avg Entry</span>
             <span>Live Price</span>
             <span>Net Return ({data.baseCurrency})</span>
+            <span style={{ textAlign: 'center' }}>Action</span>
           </div>
           {calculatedHoldings.map((h) => {
             const isProfit = (h.unrealizedPnlBase || 0) >= 0
             const flash = tickFlashes[h.symbol]
 
             return (
-              <button
-                key={h.symbol}
+              <div
+                key={`${h.symbol}-${h.side || 'BUY'}`}
                 className={`pf-table-row ${flash ? `pf-row-${flash}` : ''}`}
                 onClick={() => onSelect(h.symbol)}
+                role="button"
+                tabIndex={0}
+                style={{ cursor: 'pointer' }}
               >
                 <div className="pf-sym-block">
                   <div className="pf-sym-line">
                     <span className="pf-sym">{h.symbol}</span>
+                    <span className={`pf-side-badge ${h.side === 'SELL' ? 'sell' : 'buy'}`}>
+                      {h.side === 'SELL' ? 'SHORT' : 'LONG'}
+                    </span>
                     {flash && (
                       <span className={`pf-flash-indicator ${flash}`}>
                         {flash === 'gain' ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
@@ -236,7 +279,18 @@ export default function PortfolioPanel({ onSelect, refreshKey, onOpenAnalytics }
                     ({isProfit ? '+' : ''}{h.pnlPercent}%)
                   </span>
                 </div>
-              </button>
+
+                <div style={{ textAlign: 'center' }}>
+                  <button
+                    className="pf-close-btn"
+                    disabled={closingSymbol === h.symbol}
+                    onClick={(e) => handleClosePosition(e, h)}
+                    title={`Close ${h.side === 'SELL' ? 'Short' : 'Long'} Position`}
+                  >
+                    {closingSymbol === h.symbol ? 'Closing…' : 'Close Trade'}
+                  </button>
+                </div>
+              </div>
             )
           })}
         </div>
@@ -244,4 +298,3 @@ export default function PortfolioPanel({ onSelect, refreshKey, onOpenAnalytics }
     </div>
   )
 }
-

@@ -114,6 +114,75 @@
   gap: 4px;
 }
 
+.sd-indicators-group {
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.sd-indicators-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-4);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-right: 2px;
+}
+
+.sd-ind-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: var(--r-sm);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sd-ind-btn:hover {
+  color: var(--text-1);
+  border-color: var(--border-strong);
+}
+
+.sd-ind-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.sd-ind-btn.active-sma {
+  background: rgba(245, 158, 11, 0.12);
+  color: #F59E0B;
+  border-color: rgba(245, 158, 11, 0.4);
+  font-weight: 700;
+}
+
+.sd-ind-btn.active-ema {
+  background: rgba(6, 182, 212, 0.12);
+  color: #06B6D4;
+  border-color: rgba(6, 182, 212, 0.4);
+  font-weight: 700;
+}
+
+.sd-ind-btn.active-bb {
+  background: rgba(96, 165, 250, 0.12);
+  color: #60A5FA;
+  border-color: rgba(96, 165, 250, 0.4);
+  font-weight: 700;
+}
+
+.sd-ind-btn.active-rsi {
+  background: rgba(168, 85, 247, 0.12);
+  color: #A855F7;
+  border-color: rgba(168, 85, 247, 0.4);
+  font-weight: 700;
+}
+
 .sd-tab-btn {
   padding: 4px 10px;
   border-radius: var(--r-sm);
@@ -379,6 +448,99 @@
 
 .sd-btn.buy { background: #10B981; color: white; }
 .sd-btn.sell { background: #EF4444; color: white; }
+
+.sd-trade-hint {
+  font-size: 11px;
+  color: var(--text-4);
+  line-height: 1.4;
+  margin-top: -2px;
+}
+
+.sd-trade-hint strong {
+  color: var(--text-2);
+}
+
+/* Active Open Position Banner */
+.sd-active-position-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-left: 4px solid var(--accent);
+  padding: 10px 14px;
+  border-radius: var(--r-sm);
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.sd-ap-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sd-ap-badge {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+
+.sd-ap-badge.buy {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.sd-ap-badge.sell {
+  background: rgba(239, 68, 68, 0.15);
+  color: #EF4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.sd-ap-info {
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+.sd-ap-pnl {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--bg-subtle);
+}
+
+.sd-ap-close-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: var(--r-sm);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: white;
+  background: #EF4444;
+  border: 1px solid #DC2626;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sd-ap-close-btn:hover:not(:disabled) {
+  background: #DC2626;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);
+  transform: translateY(-1px);
+}
+
+.sd-ap-close-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 /* ─── Institutional Order Book Depth ─── */
 .sd-depth-card {

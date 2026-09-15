@@ -24,6 +24,8 @@ export const portfolioApi = {
     axios.post('/api/portfolio/buy', { symbol, quantity, orderType }).then((r) => r.data),
   sell: (symbol, quantity, orderType = 'MARKET') =>
     axios.post('/api/portfolio/sell', { symbol, quantity, orderType }).then((r) => r.data),
+  close: (symbol, quantity = null, side = null) =>
+    axios.post('/api/portfolio/close', { symbol, quantity, side }).then((r) => r.data),
   transactions: () => axios.get('/api/portfolio/transactions').then((r) => r.data.transactions),
 }
 
