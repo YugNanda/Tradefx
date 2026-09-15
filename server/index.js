@@ -130,7 +130,7 @@ priceScheduler.start(io)
 // ─── Start server ─────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000
 server.listen(PORT, () => {
-  console.log(`🚀 TradeX Server running on port ${PORT}`)
+  console.log(`🚀 Tradefx Server running on port ${PORT}`)
   console.log(`📡 WebSocket ready`)
   console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`)
 })

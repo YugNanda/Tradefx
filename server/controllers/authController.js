@@ -86,7 +86,7 @@ exports.forgotPassword = async (req, res) => {
 
     const user = await User.findOne({ email: email.toLowerCase() })
     if (!user) {
-      return res.status(404).json({ message: 'No TradeX account found with this email address' })
+      return res.status(404).json({ message: 'No Tradefx account found with this email address' })
     }
 
     // Generate random 6-digit numeric OTP
@@ -167,7 +167,7 @@ exports.resetPassword = async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Password reset successfully! Logged in to TradeX.',
+      message: 'Password reset successfully! Logged in to Tradefx.',
       token,
       user: user.toSafeObject(),
     })

@@ -38,7 +38,7 @@ export default function Navbar({ onOpenAuth }) {
               <circle cx="21" cy="6" r="2.5" fill="currentColor"/>
             </svg>
           </div>
-          <span>TradeX</span>
+          <span>Tradefx</span>
         </a>
 
         {/* Center links */}

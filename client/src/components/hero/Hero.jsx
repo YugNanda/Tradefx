@@ -206,7 +206,7 @@ export default function Hero({ onOpenAuth }) {
                 <span className="ht-dot yellow" />
                 <span className="ht-dot green" />
               </div>
-              <div className="ht-title">TradeX High-Frequency Terminal v2.4</div>
+              <div className="ht-title">Tradefx High-Frequency Terminal v2.4</div>
               <div className="ht-conn">
                 <span className="ht-conn-dot" />
                 <span>1.5s LIVE</span>

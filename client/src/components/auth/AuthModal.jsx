@@ -80,7 +80,7 @@ export default function AuthModal({ mode: initialMode, onClose }) {
         toast.success('Welcome back!')
       } else {
         await register(form.name, form.email, form.password)
-        toast.success('Account created! Welcome to TradeX.')
+        toast.success('Account created! Welcome to Tradefx.')
       }
       onClose()
       navigate('/dashboard')
@@ -245,7 +245,7 @@ export default function AuthModal({ mode: initialMode, onClose }) {
               </button>
             </div>
             <p className="otp-popup-msg">
-              Your 6-digit TradeX recovery code for <strong>{activeOtpPopup.email}</strong> is:
+              Your 6-digit Tradefx recovery code for <strong>{activeOtpPopup.email}</strong> is:
             </p>
             <div className="otp-popup-code-row">
               <div className="otp-popup-code-badge">{activeOtpPopup.code}</div>
@@ -281,7 +281,7 @@ export default function AuthModal({ mode: initialMode, onClose }) {
                 <circle cx="21" cy="6" r="2.5" fill="white"/>
               </svg>
             </div>
-            <span>TradeX</span>
+            <span>Tradefx</span>
           </div>
 
           {/* Mode Switcher Tabs (Login / Signup) */}
@@ -397,7 +397,7 @@ export default function AuthModal({ mode: initialMode, onClose }) {
               <button className={`modal-submit ${loading ? 'loading' : ''}`} onClick={submit} disabled={loading}>
                 {loading
                   ? <span className="submit-spin" />
-                  : mode === 'login' ? 'Sign in to TradeX' : 'Create free account'
+                  : mode === 'login' ? 'Sign in to Tradefx' : 'Create free account'
                 }
               </button>
 
@@ -426,7 +426,7 @@ export default function AuthModal({ mode: initialMode, onClose }) {
                 <div className="forgot-step-view">
                   <div className="modal-headline">
                     <h2>Reset Password</h2>
-                    <p>Enter your TradeX registered email to receive a 6-digit verification code.</p>
+                    <p>Enter your Tradefx registered email to receive a 6-digit verification code.</p>
                   </div>
 
                   <div className="mf-group" style={{ marginBottom: 20 }}>
@@ -515,7 +515,7 @@ export default function AuthModal({ mode: initialMode, onClose }) {
                 <div className="forgot-step-view">
                   <div className="modal-headline">
                     <h2>Create New Password</h2>
-                    <p>Your code is verified. Enter a secure password for your TradeX account.</p>
+                    <p>Your code is verified. Enter a secure password for your Tradefx account.</p>
                   </div>
 
                   <div className="modal-fields">

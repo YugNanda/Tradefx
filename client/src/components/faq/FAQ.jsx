@@ -3,12 +3,12 @@ import './FAQ.css'
 
 const FAQS = [
   {
-    q: 'Is TradeX free to use?',
-    a: 'Yes — TradeX is completely free for virtual trading. You get ₹10,00,000 in virtual capital to practice with real market data. Premium plans with advanced AI signals and extended history are coming in Phase 2.',
+    q: 'Is Tradefx free to use?',
+    a: 'Yes — Tradefx is completely free for virtual trading. You get ₹10,00,000 in virtual capital to practice with real market data. Premium plans with advanced AI signals and extended history are coming in Phase 2.',
   },
   {
     q: 'Which markets are available?',
-    a: 'TradeX covers NSE (NIFTY 50, BANKNIFTY, 2000+ stocks), BSE (SENSEX, equities), NYSE & NASDAQ (US stocks), Forex (30+ currency pairs), Crypto (BTC, ETH, top 100 coins), and Commodities (Gold, Silver, Crude Oil).',
+    a: 'Tradefx covers NSE (NIFTY 50, BANKNIFTY, 2000+ stocks), BSE (SENSEX, equities), NYSE & NASDAQ (US stocks), Forex (30+ currency pairs), Crypto (BTC, ETH, top 100 coins), and Commodities (Gold, Silver, Crude Oil).',
   },
   {
     q: 'Is my money safe? Do I need to deposit anything?',
@@ -19,7 +19,7 @@ const FAQS = [
     a: 'Prices update via WebSocket every 1–2 seconds for major indices, stocks, and crypto. Forex data refreshes every second. This is true streaming data, not polling.',
   },
   {
-    q: 'Can I use TradeX to learn trading from scratch?',
+    q: 'Can I use Tradefx to learn trading from scratch?',
     a: 'Absolutely. The virtual portfolio is designed for learners. You can place buy/sell orders, track P&L, read chart patterns, and study technical indicators — all without any real financial risk.',
   },
   {
@@ -32,7 +32,7 @@ const FAQS = [
   },
   {
     q: 'How do price alerts work?',
-    a: 'Set a target price for any instrument. TradeX sends you an in-app notification and optionally an email when the price crosses your threshold — powered by real-time WebSocket monitoring.',
+    a: 'Set a target price for any instrument. Tradefx sends you an in-app notification and optionally an email when the price crosses your threshold — powered by real-time WebSocket monitoring.',
   },
 ]
 
@@ -51,7 +51,7 @@ export default function FAQ() {
               Common questions
             </h2>
             <p className="section-sub" style={{ textAlign: 'left', maxWidth: 300 }}>
-              Everything you need to know about TradeX. Can't find what you're looking for?
+              Everything you need to know about Tradefx. Can't find what you're looking for?
             </p>
             <a href="mailto:support@tradex.in" className="faq-contact">
               Contact support →

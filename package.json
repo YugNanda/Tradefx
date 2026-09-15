@@ -1,7 +1,7 @@
 {
-  "name": "tradex",
+  "name": "tradefx",
   "version": "1.0.0",
-  "description": "TradeX - Professional Stock Market Analysis & Virtual Trading Platform",
+  "description": "Tradefx - Professional Stock Market Analysis & Virtual Trading Platform",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd server && npm run dev",

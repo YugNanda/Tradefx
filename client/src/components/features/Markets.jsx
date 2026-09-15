@@ -131,7 +131,7 @@ export default function Markets({ onOpenAuth }) {
         </div>
 
         <div className="markets-more">
-          <span>+40 more institutional assets available in TradeX terminal including</span>
+          <span>+40 more institutional assets available in Tradefx terminal including</span>
           <div className="markets-tags">
             {['BANKNIFTY', 'MIDCAP150', 'DAX 40', 'FTSE 100', 'GBP/USD', 'USD/JPY', 'Silver', 'Crude Oil (WTI)'].map(
               (t) => (

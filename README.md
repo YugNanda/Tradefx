@@ -1,4 +1,4 @@
-# TradeX — Institutional Trading & Financial Analytics Platform (Enterprise Edition)
+# Tradefx — Institutional Trading & Financial Analytics Platform (Enterprise Edition)
 
 A production-ready, institutional-grade financial analytics and virtual paper trading platform supporting multiple global asset classes (NSE, BSE, NYSE, Crypto, Forex).
 

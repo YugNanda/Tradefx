@@ -144,7 +144,7 @@ exports.getLeaderboard = async (_req, res) => {
           id: u._id.toString(),
           name: u.name,
           avatar: u.avatar,
-          firm: 'TradeX Institutional Desk',
+          firm: 'Tradefx Institutional Desk',
           desk: 'Virtual Trading Sandbox',
           netWorth: Number(netWorth.toFixed(2)),
           realizedPnl: Number(realizedPnl.toFixed(2)),

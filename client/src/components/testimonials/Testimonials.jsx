@@ -47,7 +47,7 @@ const REVIEWS = [
     avatar: 'AR',
     color: '#06B6D4',
     stars: 5,
-    text: 'I was scared of markets before TradeX. The virtual trading let me learn without losing money. Now I invest real money with confidence. Thank you!',
+    text: 'I was scared of markets before Tradefx. The virtual trading let me learn without losing money. Now I invest real money with confidence. Thank you!',
   },
 ]
 
@@ -57,7 +57,7 @@ export default function Testimonials() {
       <div className="section-inner">
         <div className="section-header">
           <div className="section-eyebrow">User Experience</div>
-          <h2 className="section-title">Traders love TradeX</h2>
+          <h2 className="section-title">Traders love Tradefx</h2>
           <p className="section-sub">From beginners to seasoned traders — see what the community says.</p>
         </div>
 

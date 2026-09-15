@@ -37,7 +37,7 @@ export default function Footer({ onOpenAuth }) {
                 <circle cx="21" cy="6" r="2.5" fill="white"/>
               </svg>
             </div>
-            <span>TradeX Terminal</span>
+            <span>Tradefx Terminal</span>
           </div>
           <p className="footer-tagline">
             Institutional-grade multi-asset paper trading terminal and quantitative strategy simulation engine.
@@ -78,10 +78,10 @@ export default function Footer({ onOpenAuth }) {
       <div className="footer-bottom">
         <div className="footer-bottom-inner">
           <div className="footer-copy">
-            © {new Date().getFullYear()} TradeX Institutional Technologies Inc. All rights reserved.
+            © {new Date().getFullYear()} Tradefx Institutional Technologies Inc. All rights reserved.
           </div>
           <div className="footer-disclaimer">
-            Notice: TradeX is a quantitative trading simulation and educational execution environment. All portfolios utilize simulated virtual capital without real financial risk. Market quotes are generated via low-latency algorithmic streaming for backtesting and strategy evaluation. Not investment advice or a registered broker-dealer.
+            Notice: Tradefx is a quantitative trading simulation and educational execution environment. All portfolios utilize simulated virtual capital without real financial risk. Market quotes are generated via low-latency algorithmic streaming for backtesting and strategy evaluation. Not investment advice or a registered broker-dealer.
           </div>
         </div>
       </div>

@@ -93,8 +93,8 @@ export default function DashboardPage() {
                 <circle cx="21" cy="6" r="2.5" fill="white" />
               </svg>
             </div>
-            <span>TradeX Terminal</span>
-            <div className="dash-live-conn-pill" title={connected ? 'Live 1.5s Institutional Stream Connected' : 'Connecting to TradeX engine…'}>
+            <span>Tradefx Terminal</span>
+            <div className="dash-live-conn-pill" title={connected ? 'Live 1.5s Institutional Stream Connected' : 'Connecting to Tradefx engine…'}>
               <span className={`dash-conn-dot ${connected ? 'on' : ''}`} />
               <span className="dash-conn-text">{connected ? 'Live 1.5s' : 'Connecting…'}</span>
             </div>
