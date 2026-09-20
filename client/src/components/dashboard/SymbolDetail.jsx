@@ -1,23 +1,19 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import ReactApexChart from 'react-apexcharts'
 import toast from 'react-hot-toast'
 import {
   Sparkles,
   TrendingUp,
   TrendingDown,
   Loader2,
-  BarChart2,
-  LineChart,
   ShieldCheck,
   Zap,
-  Clock,
-  Layers,
   Flame,
+  Layers,
 } from 'lucide-react'
 import { marketApi, portfolioApi, signalsApi } from '../../api/marketApi'
 import { useLiveQuotes } from '../../context/MarketContext'
 import { useTheme } from '../../context/ThemeContext'
-import CandleChartSvg from './CandleChartSvg'
+import TradingViewChart from './TradingViewChart'
 import './SymbolDetail.css'
 
 const TF_INTERVALS = {
@@ -54,14 +50,9 @@ export default function SymbolDetail({ instrument, onTraded, refreshKey }) {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
-  const [chartType, setChartType] = useState('candlestick') // 'candlestick' | 'area'
   const [timeframe, setTimeframe] = useState('1m') // '1m' | '5m' | '15m' | '1H' | '1D'
   const [candles, setCandles] = useState([])
   const [chartLoading, setChartLoading] = useState(false)
-
-  // Technical Indicators state
-  const [indicators, setIndicators] = useState({ sma: false, ema: false, bb: false, rsi: false })
-  const toggleIndicator = (name) => setIndicators((prev) => ({ ...prev, [name]: !prev[name] }))
 
   // Active user position for this symbol
   const [activeHolding, setActiveHolding] = useState(null)
@@ -144,22 +135,7 @@ export default function SymbolDetail({ instrument, onTraded, refreshKey }) {
     return () => clearInterval(timer)
   }, [timeframe, quote?.price])
 
-  // Update active open candle in real time on incoming socket tick
-  useEffect(() => {
-    const p = Number(quote?.price)
-    if (!Number.isFinite(p) || p <= 0 || candles.length === 0) return
-    setCandles((prev) => {
-      if (!prev.length) return prev
-      const updated = [...prev]
-      const last = { ...updated[updated.length - 1] }
-      const open = Number(last.y[0]) || p
-      const high = Math.max(Number(last.y[1]) || p, p)
-      const low = Math.min(Number(last.y[2]) || p, p)
-      last.y = [open, high, low, p]
-      updated[updated.length - 1] = last
-      return updated
-    })
-  }, [quote?.price])
+
 
   const fetchSignal = useCallback(async () => {
     if (!symbol) return
@@ -234,107 +210,27 @@ export default function SymbolDetail({ instrument, onTraded, refreshKey }) {
   const currentPrice = quote?.price || instrument?.price || 0
   const up = (quote?.changePercent ?? 0) >= 0
 
-  // Current active candle values for OHLC HUD
-  const activeCandle = candles.length > 0 ? candles[candles.length - 1] : null
-  const ohlcOpen = activeCandle ? activeCandle.y[0] : currentPrice
-  const ohlcHigh = activeCandle ? activeCandle.y[1] : currentPrice
-  const ohlcLow = activeCandle ? activeCandle.y[2] : currentPrice
-  const ohlcClose = activeCandle ? activeCandle.y[3] : currentPrice
-  const candleUp = ohlcClose >= ohlcOpen
+  // Live real-time P&L calculation for active position in this symbol
+  const livePnl = useMemo(() => {
+    if (!activeHolding) return null
+    const price = currentPrice || activeHolding.avgBuyPrice || 0
+    const avg = activeHolding.avgBuyPrice || price
+    const qty = activeHolding.quantity || 0
+    const isShort = activeHolding.side === 'SELL'
+    const diffPerUnit = isShort ? (avg - price) : (price - avg)
+    const unrealized = diffPerUnit * qty
+    const pct = avg > 0 ? (diffPerUnit / avg) * 100 : 0
 
-  // Chart configuration
-  const isCandle = chartType === 'candlestick'
-
-  const chartSeries = useMemo(() => {
-    if (!candles.length || !symbol) return []
-    if (isCandle) {
-      return [
-        {
-          name: symbol,
-          data: candles.map((c) => ({
-            x: Number(c.x),
-            y: [Number(c.y[0]), Number(c.y[1]), Number(c.y[2]), Number(c.y[3])],
-          })),
-        },
-      ]
-    }
-    return [
-      {
-        name: symbol,
-        data: candles.map((c) => ({
-          x: Number(c.x),
-          y: Number(c.y[3]),
-        })),
-      },
-    ]
-  }, [candles, isCandle, symbol])
-
-  const textColor = isDark ? '#94A3B8' : '#586E75'
-  const gridColor = isDark ? 'rgba(241, 245, 249, 0.08)' : 'rgba(101, 123, 131, 0.16)'
-  const accentColor = isDark ? '#3B82F6' : '#268BD2'
-
-  const chartOptions = useMemo(() => {
     return {
-      chart: {
-        type: 'area',
-        height: 290,
-        toolbar: {
-          show: true,
-          tools: {
-            download: false,
-            selection: true,
-            zoom: true,
-            zoomin: true,
-            zoomout: true,
-            pan: true,
-            reset: true,
-          },
-        },
-        animations: { enabled: false },
-        background: 'transparent',
-      },
-      theme: { mode: isDark ? 'dark' : 'light' },
-      stroke: { width: 2.2, curve: 'smooth' },
-      colors: [up ? '#10B981' : '#EF4444'],
-      fill: {
-        type: 'gradient',
-        gradient: {
-          shadeIntensity: 1,
-          opacityFrom: 0.45,
-          opacityTo: 0.05,
-          stops: [0, 95, 100],
-        },
-      },
-      xaxis: {
-        type: 'datetime',
-        labels: {
-          datetimeUTC: false,
-          format: timeframe === '1D' ? 'dd MMM HH:mm' : 'HH:mm',
-          style: { fontSize: '10px', colors: textColor },
-        },
-        crosshairs: { show: true, stroke: { color: accentColor, width: 1, dashArray: 3 } },
-        axisBorder: { show: false },
-        axisTicks: { show: false },
-      },
-      yaxis: {
-        tooltip: { enabled: true },
-        crosshairs: { show: true, stroke: { color: accentColor, width: 1, dashArray: 3 } },
-        labels: {
-          formatter: (v) => (v != null ? Number(v).toFixed(v < 2 ? 4 : 2) : ''),
-          style: { fontSize: '10px', colors: textColor },
-        },
-      },
-      grid: {
-        borderColor: gridColor,
-        strokeDashArray: 3,
-        padding: { left: 8, right: 8, bottom: 4 },
-      },
-      tooltip: {
-        theme: isDark ? 'dark' : 'light',
-        x: { format: 'dd MMM yyyy HH:mm' },
-      },
+      unrealized: Number(unrealized.toFixed(2)),
+      percent: Number(pct.toFixed(2)),
+      isProfit: unrealized >= 0,
+      currentPrice: price,
+      isShort,
     }
-  }, [isDark, up, timeframe, textColor, gridColor, accentColor])
+  }, [activeHolding, currentPrice])
+
+
 
   // Simulated Institutional Order Book Depth (Bids & Asks around currentPrice)
   const orderBook = useMemo(() => {
@@ -402,130 +298,25 @@ export default function SymbolDetail({ instrument, onTraded, refreshKey }) {
         </div>
       </div>
 
-      {/* Interactive Chart Controls Bar */}
-      <div className="sd-controls-bar">
-        <div className="sd-ctrl-group">
-          <button
-            className={`sd-tab-btn ${chartType === 'candlestick' ? 'active' : ''}`}
-            onClick={() => setChartType('candlestick')}
-            title="Candlestick (OHLC)"
-          >
-            <BarChart2 size={13} style={{ marginRight: 4 }} /> Candlestick
-          </button>
-          <button
-            className={`sd-tab-btn ${chartType === 'area' ? 'active' : ''}`}
-            onClick={() => setChartType('area')}
-            title="Line Area Chart"
-          >
-            <LineChart size={13} style={{ marginRight: 4 }} /> Line Area
-          </button>
-        </div>
-
-        {/* Timeframe Selector */}
-        <div className="sd-ctrl-group">
-          {['1m', '5m', '15m', '1H', '1D'].map((tf) => (
-            <button
-              key={tf}
-              className={`sd-tab-btn ${timeframe === tf ? 'active' : ''}`}
-              onClick={() => setTimeframe(tf)}
-            >
-              {tf}
-            </button>
-          ))}
-        </div>
-
-        {/* Technical Indicators Selector */}
-        <div className="sd-ctrl-group sd-indicators-group">
-          <span className="sd-indicators-label">Indicators:</span>
-          <button
-            className={`sd-ind-btn ${indicators.sma ? 'active-sma' : ''}`}
-            onClick={() => toggleIndicator('sma')}
-            title="Toggle SMA 20 (Simple Moving Average)"
-          >
-            <span className="sd-ind-dot" style={{ background: '#F59E0B' }} /> SMA 20
-          </button>
-          <button
-            className={`sd-ind-btn ${indicators.ema ? 'active-ema' : ''}`}
-            onClick={() => toggleIndicator('ema')}
-            title="Toggle EMA 50 (Exponential Moving Average)"
-          >
-            <span className="sd-ind-dot" style={{ background: '#06B6D4' }} /> EMA 50
-          </button>
-          <button
-            className={`sd-ind-btn ${indicators.bb ? 'active-bb' : ''}`}
-            onClick={() => toggleIndicator('bb')}
-            title="Toggle Bollinger Bands (20, 2)"
-          >
-            <span className="sd-ind-dot" style={{ background: '#60A5FA' }} /> BB (20,2)
-          </button>
-          <button
-            className={`sd-ind-btn ${indicators.rsi ? 'active-rsi' : ''}`}
-            onClick={() => toggleIndicator('rsi')}
-            title="Toggle RSI 14 (Relative Strength Index)"
-          >
-            <span className="sd-ind-dot" style={{ background: '#A855F7' }} /> RSI 14
-          </button>
-        </div>
-
-        {/* ⏱️ "Count to Bar" Countdown Timer Badge */}
-        <div className="sd-count-to-bar-badge" title="Countdown to active candle close">
-          <Clock size={13} className="sd-bar-clock-icon" />
-          <span className="sd-bar-title">Count to Bar:</span>
-          <span className="sd-bar-digits mono">{formatCountdown(barSecondsLeft)}</span>
-          <span className="sd-bar-pulse" />
-        </div>
-      </div>
-
-      {/* Live Active Bar OHLC HUD Strip */}
-      <div className="sd-ohlc-hud">
-        <span className="sd-hud-item">
-          O: <strong>{ohlcOpen?.toFixed(2)}</strong>
-        </span>
-        <span className="sd-hud-item">
-          H: <strong style={{ color: '#10B981' }}>{ohlcHigh?.toFixed(2)}</strong>
-        </span>
-        <span className="sd-hud-item">
-          L: <strong style={{ color: '#EF4444' }}>{ohlcLow?.toFixed(2)}</strong>
-        </span>
-        <span className="sd-hud-item">
-          C: <strong className={candleUp ? 'gain' : 'loss'}>{ohlcClose?.toFixed(2)}</strong>
-        </span>
-        <span className="sd-hud-item">
-          Bar Change:{' '}
-          <strong className={candleUp ? 'gain' : 'loss'}>
-            {candleUp ? '+' : ''}
-            {ohlcOpen > 0 ? (((ohlcClose - ohlcOpen) / ohlcOpen) * 100).toFixed(2) : '0.00'}%
-          </strong>
-        </span>
-      </div>
-
-      {/* Chart Canvas */}
-      <div className="sd-chart">
+      {/* Institutional TradingView Lightweight Charts Window */}
+      <div style={{ margin: '8px 0 16px' }}>
         {chartLoading && candles.length === 0 ? (
           <div className="sd-chart-empty">
             <Loader2 size={22} className="spin" />
-            <span style={{ marginTop: 8 }}>Streaming institutional chart ticks…</span>
+            <span style={{ marginTop: 8 }}>Streaming institutional TradingView chart ticks…</span>
           </div>
-        ) : isCandle ? (
-          <CandleChartSvg
+        ) : (
+          <TradingViewChart
             candles={candles}
             currentPrice={currentPrice}
             symbol={symbol}
             isDark={isDark}
             currency={instrument.currency}
             timeframe={timeframe}
-            indicators={indicators}
-            onToggleIndicator={toggleIndicator}
+            onTimeframeChange={setTimeframe}
+            barSecondsLeft={barSecondsLeft}
+            exchange={instrument.exchange || 'NSE'}
           />
-        ) : chartSeries.length > 0 && chartSeries[0].data.length > 0 ? (
-          <ReactApexChart
-            options={chartOptions}
-            series={chartSeries}
-            type="area"
-            height={290}
-          />
-        ) : (
-          <div className="sd-chart-empty">Gathering real-time market ticks…</div>
         )}
       </div>
 
@@ -574,13 +365,14 @@ export default function SymbolDetail({ instrument, onTraded, refreshKey }) {
                   <strong>{activeHolding.quantity}</strong> {activeHolding.symbol} @ avg{' '}
                   <strong>{activeHolding.avgBuyPrice?.toFixed(2)}</strong>
                 </span>
-                {activeHolding.unrealizedPnlBase != null && (
+                {livePnl && (
                   <span
-                    className={`sd-ap-pnl mono ${activeHolding.unrealizedPnlBase >= 0 ? 'gain' : 'loss'}`}
+                    className={`sd-ap-pnl mono ${livePnl.isProfit ? 'gain' : 'loss'}`}
+                    title="Real-time Unrealized P&L (ticks live)"
                   >
-                    {activeHolding.unrealizedPnlBase >= 0 ? '+' : ''}
-                    {activeHolding.unrealizedPnlBase.toFixed(2)} ({activeHolding.unrealizedPnlBase >= 0 ? '+' : ''}
-                    {activeHolding.pnlPercent}%)
+                    {livePnl.isProfit ? '+' : ''}
+                    {livePnl.unrealized.toFixed(2)} {instrument.currency} ({livePnl.isProfit ? '+' : ''}
+                    {livePnl.percent}%)
                   </span>
                 )}
               </div>
@@ -627,18 +419,28 @@ export default function SymbolDetail({ instrument, onTraded, refreshKey }) {
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ color: 'var(--text-3)' }}>Current Market Price:</span>
-                      <span className="mono bold">
-                        {currentPrice?.toFixed(2)} {instrument.currency}
+                      <span className="mono bold" style={{ color: 'var(--text-1)' }}>
+                        {currentPrice ? currentPrice.toFixed(2) : '—'} {instrument.currency}
                       </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ color: 'var(--text-3)' }}>Live Unrealized P&amp;L:</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span className="dash-conn-dot on" style={{ width: 6, height: 6 }} />
+                        <span style={{ color: 'var(--text-3)' }}>Live Unrealized P&amp;L:</span>
+                      </div>
                       <span
-                        className={`mono bold ${activeHolding.unrealizedPnlBase >= 0 ? 'gain' : 'loss'}`}
+                        className={`mono bold ${livePnl ? (livePnl.isProfit ? 'gain' : 'loss') : ''}`}
                         style={{ fontSize: '13px' }}
                       >
-                        {activeHolding.unrealizedPnlBase >= 0 ? '+' : ''}
-                        {activeHolding.unrealizedPnlBase} ({activeHolding.pnlPercent}%)
+                        {livePnl ? (
+                          <>
+                            {livePnl.isProfit ? '+' : ''}
+                            {livePnl.unrealized.toFixed(2)} {instrument.currency} ({livePnl.isProfit ? '+' : ''}
+                            {livePnl.percent}%)
+                          </>
+                        ) : (
+                          '—'
+                        )}
                       </span>
                     </div>
                   </div>

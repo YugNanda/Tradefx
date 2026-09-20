@@ -1,9 +1,54 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 import { useAuth } from '../../context/AuthContext'
 import './AuthModal.css'
+
+const ModalRightVisual = memo(function ModalRightVisual() {
+  return (
+    <div className="modal-right">
+      <div className="mr-content">
+        <div className="mr-badge">
+          <span className="mr-dot" />
+          Markets live now
+        </div>
+        <h3 className="mr-title">Trade 50+ markets with ₹10L virtual capital</h3>
+        <div className="mr-features">
+          {[
+            ['📈', 'Real-time NSE, BSE, NYSE data'],
+            ['₿', 'Top 100 crypto pairs'],
+            ['💱', '30+ Forex pairs live'],
+            ['🔔', 'Instant price alerts'],
+            ['📊', 'Professional-grade charts'],
+            ['🛡️', 'No real money needed'],
+          ].map(([icon, text], i) => (
+            <div key={i} className="mr-feat">
+              <span className="mr-feat-icon">{icon}</span>
+              <span>{text}</span>
+            </div>
+          ))}
+        </div>
+        <div className="mr-mini-chart">
+          <svg viewBox="0 0 200 80" preserveAspectRatio="none" style={{ width: '100%', height: 80 }}>
+            <defs>
+              <linearGradient id="mrGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.3"/>
+                <stop offset="100%" stopColor="#3B82F6" stopOpacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0 60 L20 50 L40 55 L60 35 L80 40 L100 25 L120 30 L140 15 L160 20 L180 8 L200 12 L200 80 L0 80 Z" fill="url(#mrGrad)" />
+            <path d="M0 60 L20 50 L40 55 L60 35 L80 40 L100 25 L120 30 L140 15 L160 20 L180 8 L200 12" fill="none" stroke="#3B82F6" strokeWidth="2" style={{ strokeDasharray: 600, strokeDashoffset: 600, animation: 'drawLine 1.5s ease 0.5s forwards' }}/>
+          </svg>
+          <div className="mr-chart-label">
+            <span>NIFTY 50</span>
+            <span className="gain">▲ +0.96% today</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+})
 
 export default function AuthModal({ mode: initialMode, onClose }) {
   const [mode, setMode] = useState(initialMode || 'login') // 'login' | 'signup' | 'forgot'
@@ -57,8 +102,11 @@ export default function AuthModal({ mode: initialMode, onClose }) {
   }
 
   const change = (e) => {
-    setForm(f => ({ ...f, [e.target.name]: e.target.value }))
-    setErrors(er => ({ ...er, [e.target.name]: '' }))
+    const { name, value } = e.target
+    setForm((f) => ({ ...f, [name]: value }))
+    if (errors[name]) {
+      setErrors((er) => ({ ...er, [name]: '' }))
+    }
   }
 
   const validate = () => {
@@ -556,46 +604,7 @@ export default function AuthModal({ mode: initialMode, onClose }) {
         </div>
 
         {/* Right — Visual Panel */}
-        <div className="modal-right">
-          <div className="mr-content">
-            <div className="mr-badge">
-              <span className="mr-dot" />
-              Markets live now
-            </div>
-            <h3 className="mr-title">Trade 50+ markets with ₹10L virtual capital</h3>
-            <div className="mr-features">
-              {[
-                ['📈', 'Real-time NSE, BSE, NYSE data'],
-                ['₿', 'Top 100 crypto pairs'],
-                ['💱', '30+ Forex pairs live'],
-                ['🔔', 'Instant price alerts'],
-                ['📊', 'Professional-grade charts'],
-                ['🛡️', 'No real money needed'],
-              ].map(([icon, text], i) => (
-                <div key={i} className="mr-feat">
-                  <span className="mr-feat-icon">{icon}</span>
-                  <span>{text}</span>
-                </div>
-              ))}
-            </div>
-            <div className="mr-mini-chart">
-              <svg viewBox="0 0 200 80" preserveAspectRatio="none" style={{ width: '100%', height: 80 }}>
-                <defs>
-                  <linearGradient id="mrGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.3"/>
-                    <stop offset="100%" stopColor="#3B82F6" stopOpacity="0"/>
-                  </linearGradient>
-                </defs>
-                <path d="M0 60 L20 50 L40 55 L60 35 L80 40 L100 25 L120 30 L140 15 L160 20 L180 8 L200 12 L200 80 L0 80 Z" fill="url(#mrGrad)" />
-                <path d="M0 60 L20 50 L40 55 L60 35 L80 40 L100 25 L120 30 L140 15 L160 20 L180 8 L200 12" fill="none" stroke="#3B82F6" strokeWidth="2" style={{ strokeDasharray: 600, strokeDashoffset: 600, animation: 'drawLine 1.5s ease 0.5s forwards' }}/>
-              </svg>
-              <div className="mr-chart-label">
-                <span>NIFTY 50</span>
-                <span className="gain">▲ +0.96% today</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ModalRightVisual />
       </div>
     </div>
   )

@@ -229,64 +229,71 @@ function getCachedSync(symbol) {
 async function getOhlcHistory(symbol, timeframe = '1D') {
   const quote = await getQuote(symbol)
   const basePrice = quote.price || 100
-  const candles = []
 
-  let count = 36
+  let count = 80
   let intervalMs = 60 * 1000 // default 1m
 
   if (timeframe === '1m') {
-    count = 36
+    count = 80
     intervalMs = 60 * 1000 // 1 min intervals
   } else if (timeframe === '5m') {
-    count = 36
+    count = 80
     intervalMs = 5 * 60 * 1000 // 5 min intervals
   } else if (timeframe === '15m') {
-    count = 36
+    count = 80
     intervalMs = 15 * 60 * 1000 // 15 min intervals
   } else if (timeframe === '1H') {
-    count = 36
+    count = 80
     intervalMs = 60 * 60 * 1000 // 1 hour intervals
   } else if (timeframe === '1D') {
-    count = 36
+    count = 80
     intervalMs = 24 * 60 * 60 * 1000 // 1 day intervals
   } else if (timeframe === '1W') {
-    count = 35
+    count = 70
     intervalMs = 7 * 24 * 60 * 60 * 1000 // 1 week
   } else if (timeframe === '1M') {
-    count = 30
+    count = 60
     intervalMs = 30 * 24 * 60 * 60 * 1000 // 1 month
   } else {
-    count = 36
+    count = 80
     intervalMs = 60 * 1000
   }
 
   const now = Date.now()
-  let runningClose = basePrice * (1 - (count * 0.003))
+  // Generate realistic price action ending seamlessly at basePrice
+  let currentWalkPrice = basePrice
+  const candles = []
 
-  for (let i = count - 1; i >= 0; i--) {
+  for (let i = 0; i < count; i++) {
     const timestamp = now - i * intervalMs
-    const open = runningClose
-    const volatility = open * 0.012
-    const delta = (Math.random() - 0.48) * volatility
-    const close = Number(Math.max(0.01, open + delta).toFixed(2))
-    const high = Number((Math.max(open, close) + Math.random() * (volatility * 0.6)).toFixed(2))
-    const low = Number((Math.min(open, close) - Math.random() * (volatility * 0.6)).toFixed(2))
-    const volume = Math.floor(10000 + Math.random() * 500000)
+    const close = Number(currentWalkPrice.toFixed(2))
+    const barVolatility = Math.max(0.002, 0.003 + Math.random() * 0.005) * close
+    const delta = (Math.random() - 0.495) * barVolatility
+    const open = Number(Math.max(0.01, close - delta).toFixed(2))
+    const wickHigh = Math.random() * barVolatility * 0.5
+    const wickLow = Math.random() * barVolatility * 0.5
+    const high = Number((Math.max(open, close) + wickHigh).toFixed(2))
+    const low = Number((Math.min(open, close) - wickLow).toFixed(2))
+    const volume = Math.floor(10000 + Math.random() * 250000)
 
-    runningClose = close
     candles.push({
       x: timestamp,
       y: [open, high, low, close],
       volume,
     })
+
+    currentWalkPrice = open
   }
 
-  // Ensure last candle matches current quote close
+  // Reverse so candles are in strict ascending chronological order
+  candles.reverse()
+
+  // Ensure newest candle perfectly aligns with current quote price
   if (candles.length > 0) {
     const last = candles[candles.length - 1]
-    last.y[3] = quote.price
-    last.y[1] = Math.max(last.y[1], quote.price)
-    last.y[2] = Math.min(last.y[2], quote.price)
+    last.y[3] = basePrice
+    last.y[1] = Math.max(last.y[1], basePrice)
+    last.y[2] = Math.min(last.y[2], basePrice)
   }
 
   return {
