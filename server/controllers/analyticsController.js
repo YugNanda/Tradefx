@@ -125,7 +125,7 @@ exports.exportCsv = async (req, res) => {
     ].join('\n')
 
     res.setHeader('Content-Type', 'text/csv')
-    res.setHeader('Content-Disposition', 'attachment; filename="tradex_portfolio_ledger.csv"')
+    res.setHeader('Content-Disposition', 'attachment; filename="tradefx_portfolio_ledger.csv"')
     res.status(200).send(csvContent)
   } catch (err) {
     res.status(500).json({ message: err.message })

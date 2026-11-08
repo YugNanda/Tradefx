@@ -12,12 +12,18 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const token = localStorage.getItem('tradex_token')
+    const token = localStorage.getItem('tradefx_token') || localStorage.getItem('tradex_token')
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
       axios.get('/api/auth/me')
-        .then(res => setUser(res.data.user))
-        .catch(() => localStorage.removeItem('tradex_token'))
+        .then(res => {
+          localStorage.setItem('tradefx_token', token)
+          setUser(res.data.user)
+        })
+        .catch(() => {
+          localStorage.removeItem('tradefx_token')
+          localStorage.removeItem('tradex_token')
+        })
         .finally(() => setLoading(false))
     } else {
       setLoading(false)
@@ -27,7 +33,7 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     const res = await axios.post('/api/auth/login', { email, password })
     const { token, user } = res.data
-    localStorage.setItem('tradex_token', token)
+    localStorage.setItem('tradefx_token', token)
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
     setUser(user)
     return user
@@ -36,19 +42,20 @@ export function AuthProvider({ children }) {
   const register = async (name, email, password) => {
     const res = await axios.post('/api/auth/register', { name, email, password })
     const { token, user } = res.data
-    localStorage.setItem('tradex_token', token)
+    localStorage.setItem('tradefx_token', token)
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
     setUser(user)
     return user
   }
 
   const setAuthSession = (token, user) => {
-    localStorage.setItem('tradex_token', token)
+    localStorage.setItem('tradefx_token', token)
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
     setUser(user)
   }
 
   const logout = () => {
+    localStorage.removeItem('tradefx_token')
     localStorage.removeItem('tradex_token')
     delete axios.defaults.headers.common['Authorization']
     setUser(null)

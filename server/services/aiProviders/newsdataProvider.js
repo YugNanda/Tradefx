@@ -9,7 +9,7 @@
 // called per symbol scope (BTC, AAPL, GENERAL…). With a 6-hour cache
 // (AV_NEWS_CACHE_HOURS) each scope costs at most 4 calls/day, so we
 // safely handle ~50 distinct scopes before hitting the cap. For a
-// typical TradeX install (<10 scopes), this is very comfortable.
+// typical TradeFX install (<10 scopes), this is very comfortable.
 //
 // A separate daily budget file tracks usage so restarts don't over-spend.
 
