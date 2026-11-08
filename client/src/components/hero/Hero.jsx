@@ -6,15 +6,17 @@ import {
   BarChart2,
   Clock,
   ArrowRight,
-  Sparkles,
+  Terminal,
   Activity,
   Layers,
+  ChevronRight,
+  Cpu,
 } from 'lucide-react'
 import './Hero.css'
 
 const PREVIEWS = {
   RELIANCE: {
-    name: 'Reliance Industries',
+    name: 'Reliance Industries Ltd.',
     sym: 'RELIANCE',
     exch: 'NSE',
     price: 2865.40,
@@ -24,11 +26,25 @@ const PREVIEWS = {
     high: 2880.0,
     low: 2820.0,
     vol: '4.2M',
-    signal: 'STRONG BUY (94%)',
-    points: [45, 42, 48, 46, 52, 49, 58, 55, 62, 59, 68, 64, 75, 72, 82, 79, 88, 85, 94],
+    spread: '0.15',
+    signal: 'QUANT LONG (94%)',
+    candles: [
+      { o: 42, h: 48, l: 40, c: 46 },
+      { o: 46, h: 52, l: 44, c: 50 },
+      { o: 50, h: 54, l: 48, c: 49 },
+      { o: 49, h: 58, l: 48, c: 56 },
+      { o: 56, h: 63, l: 54, c: 61 },
+      { o: 61, h: 65, l: 59, c: 58 },
+      { o: 58, h: 70, l: 57, c: 68 },
+      { o: 68, h: 76, l: 66, c: 74 },
+      { o: 74, h: 84, l: 72, c: 81 },
+      { o: 81, h: 86, l: 79, c: 80 },
+      { o: 80, h: 92, l: 78, c: 89 },
+      { o: 89, h: 95, l: 87, c: 94 },
+    ],
   },
   BTC: {
-    name: 'Bitcoin / US Dollar',
+    name: 'Bitcoin / US Dollar Spot',
     sym: 'BTC/USD',
     exch: 'CRYPTO',
     price: 67450.00,
@@ -38,11 +54,23 @@ const PREVIEWS = {
     high: 68100.0,
     low: 65100.0,
     vol: '28.4K',
+    spread: '1.20',
     signal: 'BULLISH MOMENTUM (89%)',
-    points: [30, 36, 32, 45, 42, 55, 51, 64, 60, 72, 69, 78, 74, 86, 82, 90, 85, 95, 98],
+    candles: [
+      { o: 30, h: 38, l: 28, c: 36 },
+      { o: 36, h: 45, l: 34, c: 42 },
+      { o: 42, h: 55, l: 40, c: 51 },
+      { o: 51, h: 64, l: 48, c: 60 },
+      { o: 60, h: 72, l: 58, c: 69 },
+      { o: 69, h: 78, l: 66, c: 74 },
+      { o: 74, h: 86, l: 72, c: 82 },
+      { o: 82, h: 89, l: 80, c: 85 },
+      { o: 85, h: 96, l: 83, c: 93 },
+      { o: 93, h: 98, l: 90, c: 96 },
+    ],
   },
   AAPL: {
-    name: 'Apple Inc.',
+    name: 'Apple Inc. Common Stock',
     sym: 'AAPL',
     exch: 'NASDAQ',
     price: 189.84,
@@ -52,11 +80,22 @@ const PREVIEWS = {
     high: 191.0,
     low: 186.5,
     vol: '52.1M',
-    signal: 'ACCUMULATE (82%)',
-    points: [50, 48, 55, 52, 60, 58, 66, 62, 70, 68, 76, 73, 81, 79, 86, 84, 91, 88, 93],
+    spread: '0.02',
+    signal: 'SMART ACCUMULATE (82%)',
+    candles: [
+      { o: 50, h: 56, l: 48, c: 54 },
+      { o: 54, h: 60, l: 52, c: 58 },
+      { o: 58, h: 66, l: 56, c: 62 },
+      { o: 62, h: 70, l: 60, c: 68 },
+      { o: 68, h: 75, l: 66, c: 73 },
+      { o: 73, h: 80, l: 71, c: 78 },
+      { o: 78, h: 86, l: 76, c: 84 },
+      { o: 84, h: 90, l: 82, c: 88 },
+      { o: 88, h: 93, l: 86, c: 92 },
+    ],
   },
   NIFTY50: {
-    name: 'Nifty 50 Index',
+    name: 'NIFTY 50 Benchmark Index',
     sym: 'NIFTY 50',
     exch: 'NSE',
     price: 22450.75,
@@ -66,45 +105,105 @@ const PREVIEWS = {
     high: 22520.0,
     low: 22210.0,
     vol: '192M',
+    spread: '0.50',
     signal: 'TREND CONFIRMED (91%)',
-    points: [40, 44, 42, 50, 48, 56, 53, 62, 59, 67, 65, 73, 71, 80, 78, 85, 83, 90, 92],
+    candles: [
+      { o: 40, h: 46, l: 38, c: 44 },
+      { o: 44, h: 50, l: 42, c: 48 },
+      { o: 48, h: 56, l: 46, c: 53 },
+      { o: 53, h: 62, l: 50, c: 59 },
+      { o: 59, h: 67, l: 57, c: 65 },
+      { o: 65, h: 73, l: 63, c: 71 },
+      { o: 71, h: 80, l: 69, c: 78 },
+      { o: 78, h: 85, l: 76, c: 83 },
+      { o: 83, h: 91, l: 81, c: 90 },
+    ],
   },
 }
 
-function LiveHeroChart({ points, isUp }) {
-  const w = 540, h = 180
-  const min = Math.min(...points)
-  const max = Math.max(...points)
-  const pts = points.map((v, i) => ({
-    x: (i / (points.length - 1)) * w,
-    y: h - ((v - min) / (max - min || 1)) * (h - 30) - 15,
-  }))
-  const linePath = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
-  const areaPath = `${linePath} L ${w} ${h} L 0 ${h} Z`
-  const lastPt = pts[pts.length - 1]
+function LiveCandleChart({ candles = [] }) {
+  const w = 580
+  const h = 200
+  const padBottom = 28
+  const padTop = 14
+  const chartH = h - padBottom - padTop
 
-  const strokeColor = isUp ? '#10B981' : '#EF4444'
+  const min = Math.min(...candles.map((c) => c.l)) * 0.96
+  const max = Math.max(...candles.map((c) => c.h)) * 1.04
+  const range = max - min || 1
+
+  const scaleY = (v) => h - padBottom - ((v - min) / range) * chartH
+  const slotW = w / candles.length
+  const candleW = Math.max(14, slotW * 0.58)
 
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="hero-terminal-svg" preserveAspectRatio="none">
+    <svg viewBox={`0 0 ${w} ${h}`} className="ht-svg-candle" preserveAspectRatio="none">
       <defs>
-        <linearGradient id="heroChartGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={strokeColor} stopOpacity="0.25" />
-          <stop offset="100%" stopColor={strokeColor} stopOpacity="0.0" />
+        <linearGradient id="gridGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="rgba(88, 46, 255, 0.08)" />
+          <stop offset="100%" stopColor="transparent" />
         </linearGradient>
       </defs>
+
       {/* Grid lines */}
-      <line x1="0" y1={h * 0.25} x2={w} y2={h * 0.25} stroke="var(--border)" strokeDasharray="3" opacity="0.6" />
-      <line x1="0" y1={h * 0.5} x2={w} y2={h * 0.5} stroke="var(--border)" strokeDasharray="3" opacity="0.6" />
-      <line x1="0" y1={h * 0.75} x2={w} y2={h * 0.75} stroke="var(--border)" strokeDasharray="3" opacity="0.6" />
-      
-      {/* Gradient Area */}
-      <path d={areaPath} fill="url(#heroChartGrad)" />
-      {/* Stroke Path */}
-      <path d={linePath} fill="none" stroke={strokeColor} strokeWidth="2.5" />
-      {/* Live Glowing Cursor */}
-      <circle cx={lastPt.x} cy={lastPt.y} r="5" fill={strokeColor} />
-      <circle cx={lastPt.x} cy={lastPt.y} r="10" fill={strokeColor} opacity="0.3" className="cursor-pulse" />
+      <line x1="0" y1={scaleY(min + range * 0.75)} x2={w} y2={scaleY(min + range * 0.75)} stroke="var(--border)" strokeDasharray="3 3" />
+      <line x1="0" y1={scaleY(min + range * 0.5)} x2={w} y2={scaleY(min + range * 0.5)} stroke="var(--border)" strokeDasharray="3 3" />
+      <line x1="0" y1={scaleY(min + range * 0.25)} x2={w} y2={scaleY(min + range * 0.25)} stroke="var(--border)" strokeDasharray="3 3" />
+
+      {/* Candles */}
+      {candles.map((c, i) => {
+        const cx = i * slotW + slotW / 2
+        const isUp = c.c >= c.o
+        const bodyTop = scaleY(Math.max(c.o, c.c))
+        const bodyH = Math.max(2, Math.abs(scaleY(c.c) - scaleY(c.o)))
+        const wickTop = scaleY(c.h)
+        const wickBot = scaleY(c.l)
+        const color = isUp ? '#52FFA5' : '#FF4365'
+
+        return (
+          <g key={i}>
+            {/* Wick */}
+            <line x1={cx} y1={wickTop} x2={cx} y2={wickBot} stroke={color} strokeWidth="1.5" />
+            {/* Candle Body */}
+            <rect
+              x={cx - candleW / 2}
+              y={bodyTop}
+              width={candleW}
+              height={bodyH}
+              fill={color}
+              rx="1.5"
+            />
+          </g>
+        )
+      })}
+
+      {/* Light Blue Technical Moving Average Overlay */}
+      <path
+        d={candles
+          .map((c, i) => {
+            const cx = i * slotW + slotW / 2
+            const cy = scaleY((c.o + c.c) / 2) - 4
+            return `${i === 0 ? 'M' : 'L'} ${cx} ${cy}`
+          })
+          .join(' ')}
+        fill="none"
+        stroke="#38B4FF"
+        strokeWidth="1.8"
+      />
+
+      {/* Latest Price Target Line */}
+      {candles.length > 0 && (
+        <line
+          x1="0"
+          y1={scaleY(candles[candles.length - 1].c)}
+          x2={w}
+          y2={scaleY(candles[candles.length - 1].c)}
+          stroke="#52FFA5"
+          strokeDasharray="4 2"
+          strokeWidth="1"
+          opacity="0.85"
+        />
+      )}
     </svg>
   )
 }
@@ -114,7 +213,6 @@ export default function Hero({ onOpenAuth }) {
   const [countToBar, setCountToBar] = useState(48)
   const current = PREVIEWS[activeTab]
 
-  // Live bar countdown
   useEffect(() => {
     const timer = setInterval(() => {
       setCountToBar((c) => (c <= 1 ? 60 : c - 1))
@@ -124,195 +222,156 @@ export default function Hero({ onOpenAuth }) {
 
   return (
     <section className="hero">
-      {/* Ambient background glows */}
-      <div className="hero-glow-1" />
-      <div className="hero-glow-2" />
-      <div className="hero-grid" />
+      {/* Precision Blueprint Grid */}
+      <div className="hero-blueprint-grid" />
 
-      <div className="hero-content">
-        {/* Left Column: Value Prop */}
+      <div className="hero-shell">
+        {/* Left Column: Platform Thesis & High-Utility Actions */}
         <div className="hero-left">
-          <div className="hero-badge">
-            <span className="hero-badge-dot" />
-            <span className="hero-badge-label">1.5s High-Frequency Streaming Engine</span>
-            <span className="hero-badge-tag">MNC Caliber</span>
+          <div className="hero-kicker">
+            <span className="hk-badge">INSTITUTIONAL SIMULATION</span>
+            <span className="hk-sep">/</span>
+            <span className="hk-meta mono">WS 1.5S TICK STREAM</span>
           </div>
 
           <h1 className="hero-title">
-            The Institutional Trading Terminal <br />
-            <span className="hero-title-gradient">For Global Markets.</span>
+            Institutional Market Intelligence &amp; Virtual Execution.
           </h1>
 
-          <p className="hero-subtitle">
-            Master the markets with ₹10,00,000 in virtual capital. Access real-time NSE, BSE, NASDAQ, Forex, and Crypto data with candlestick charts, count-to-bar countdowns, quant signals, and zero financial risk.
+          <p className="hero-lead">
+            Deploy quantitative strategies across <strong>NSE, BSE, NASDAQ, Forex, and Crypto</strong>.
+            Execute with ₹10,00,000 in virtual capital, real-time depth book simulation, and mathematical risk modeling.
           </p>
 
-          <div className="hero-actions">
-            <button className="hero-cta-primary" onClick={() => onOpenAuth('signup')}>
-              <span>Launch Terminal Free</span>
-              <ArrowRight size={17} />
+          <div className="hero-cta-group">
+            <button className="h-btn-primary" onClick={() => onOpenAuth('signup')}>
+              <span>Launch Live Terminal</span>
+              <ArrowRight size={14} />
             </button>
-            <button className="hero-cta-ghost" onClick={() => onOpenAuth('login')}>
-              <span>Live Terminal Sign In</span>
+            <button className="h-btn-secondary" onClick={() => onOpenAuth('login')}>
+              <span>Institutional Sign In</span>
+              <ChevronRight size={14} />
             </button>
           </div>
 
-          <div className="hero-pill-row">
-            <div className="hero-pill">
-              <ShieldCheck size={14} color="#10B981" />
-              <span>₹10L Virtual Capital</span>
+          {/* Precision Telemetry Strip */}
+          <div className="hero-specs-grid">
+            <div className="h-spec-cell">
+              <span className="h-spec-label">VIRTUAL CAPITAL</span>
+              <span className="h-spec-val mono">₹10,00,000</span>
+              <span className="h-spec-sub">Zero financial risk</span>
             </div>
-            <div className="hero-pill">
-              <Zap size={14} color="#3B82F6" />
-              <span>1.5s Socket Stream</span>
+            <div className="h-spec-cell">
+              <span className="h-spec-label">FEED LATENCY</span>
+              <span className="h-spec-val mono mint">1.5s STREAM</span>
+              <span className="h-spec-sub">Sub-second tick engine</span>
             </div>
-            <div className="hero-pill">
-              <BarChart2 size={14} color="#F59E0B" />
-              <span>Candlestick & Count to Bar</span>
+            <div className="h-spec-cell">
+              <span className="h-spec-label">ACTIVE MARKETS</span>
+              <span className="h-spec-val mono light-blue">50+ SYMBOLS</span>
+              <span className="h-spec-sub">Equities, FX &amp; Crypto</span>
             </div>
-          </div>
-
-          {/* Institutional Stats Ribbon */}
-          <div className="hero-stats">
-            <div className="hero-stat">
-              <span className="hs-value">₹500Cr+</span>
-              <span className="hs-label">Simulated Volume</span>
-            </div>
-            <div className="hero-stat-sep" />
-            <div className="hero-stat">
-              <span className="hs-value">1.5s</span>
-              <span className="hs-label">Engine Frequency</span>
-            </div>
-            <div className="hero-stat-sep" />
-            <div className="hero-stat">
-              <span className="hs-value">50+</span>
-              <span className="hs-label">Global Assets</span>
-            </div>
-            <div className="hero-stat-sep" />
-            <div className="hero-stat">
-              <span className="hs-value">99.9%</span>
-              <span className="hs-label">WebSocket Uptime</span>
+            <div className="h-spec-cell">
+              <span className="h-spec-label">RISK ENGINE</span>
+              <span className="h-spec-val mono indigo">SHARPE &amp; ATR</span>
+              <span className="h-spec-sub">Automated targets</span>
             </div>
           </div>
         </div>
 
-        {/* Right Column: Interactive Terminal Showcase Window */}
+        {/* Right Column: Workstation Terminal Viewport */}
         <div className="hero-right">
-          <div className="hero-terminal-window">
-            {/* macOS Window Titlebar */}
-            <div className="ht-titlebar">
-              <div className="ht-dots">
-                <span className="ht-dot red" />
-                <span className="ht-dot yellow" />
-                <span className="ht-dot green" />
+          <div className="terminal-workstation">
+            {/* Terminal Titlebar */}
+            <div className="tw-header">
+              <div className="tw-title-left">
+                <Terminal size={13} color="var(--light-blue)" />
+                <span className="tw-title-text mono">TRADEFX.WORKSTATION // {current.sym}</span>
               </div>
-              <div className="ht-title">Tradefx High-Frequency Terminal v2.4</div>
-              <div className="ht-conn">
-                <span className="ht-conn-dot" />
-                <span>1.5s LIVE</span>
+              <div className="tw-telemetry">
+                <span className="tw-ping-dot" />
+                <span className="tw-ping-label mono">1.5s LIVE FEED</span>
               </div>
             </div>
 
-            {/* Asset Switcher Tabs */}
-            <div className="ht-tabs">
+            {/* Segmented Instrument Switcher */}
+            <div className="tw-tabs">
               {Object.keys(PREVIEWS).map((k) => (
                 <button
                   key={k}
-                  className={`ht-tab ${activeTab === k ? 'active' : ''}`}
+                  className={`tw-tab ${activeTab === k ? 'active' : ''}`}
                   onClick={() => setActiveTab(k)}
                 >
-                  {PREVIEWS[k].sym}
+                  <span className="tw-tab-sym">{PREVIEWS[k].sym}</span>
+                  <span className="tw-tab-exch mono">{PREVIEWS[k].exch}</span>
                 </button>
               ))}
             </div>
 
-            {/* Terminal Main Body */}
-            <div className="ht-body">
-              <div className="ht-head">
-                <div>
-                  <div className="ht-sym-row">
-                    <span className="ht-sym">{current.sym}</span>
-                    <span className="ht-exch">{current.exch}</span>
-                  </div>
-                  <div className="ht-fullname">{current.name}</div>
-                </div>
-
-                <div className="ht-price-col">
-                  <div className="ht-price mono">
-                    {current.curr}{current.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                  </div>
-                  <div className="ht-chg gain mono">
-                    <TrendingUp size={13} /> +{current.chg}% today
-                  </div>
-                </div>
+            {/* Instrument HUD Bar */}
+            <div className="tw-hud">
+              <div className="tw-hud-item">
+                <span className="tw-label">CURRENT TICK</span>
+                <span className="tw-val-price mono">
+                  {current.curr}{current.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </span>
+                <span className="tw-chg-pill mono up">
+                  +{current.chg}%
+                </span>
               </div>
 
-              {/* Live Count to Bar HUD */}
-              <div className="ht-hud-row">
-                <div className="ht-hud-item">
-                  <Clock size={11} color="var(--accent)" />
-                  <span>Count to Bar:</span>
-                  <strong className="mono">00:{String(countToBar).padStart(2, '0')}</strong>
-                </div>
-                <div className="ht-hud-item">
-                  <span>Open:</span>
-                  <strong className="mono">{current.open.toFixed(1)}</strong>
-                </div>
-                <div className="ht-hud-item">
-                  <span>High:</span>
-                  <strong className="mono" style={{ color: '#10B981' }}>{current.high.toFixed(1)}</strong>
-                </div>
-                <div className="ht-hud-item">
-                  <span>Low:</span>
-                  <strong className="mono" style={{ color: '#EF4444' }}>{current.low.toFixed(1)}</strong>
-                </div>
-                <div className="ht-hud-item">
-                  <span>Vol:</span>
-                  <strong className="mono">{current.vol}</strong>
-                </div>
+              <div className="tw-hud-item">
+                <span className="tw-label">COUNT TO BAR</span>
+                <span className="tw-val mono light-blue">
+                  00:{String(countToBar).padStart(2, '0')}
+                </span>
               </div>
 
-              {/* Chart Canvas */}
-              <div className="ht-chart-wrap">
-                <LiveHeroChart points={current.points} isUp={current.chg >= 0} />
+              <div className="tw-hud-item">
+                <span className="tw-label">DAY HIGH / LOW</span>
+                <span className="tw-val mono">
+                  {current.high.toFixed(1)} / {current.low.toFixed(1)}
+                </span>
               </div>
 
-              {/* Order Book Depth Snapshot */}
-              <div className="ht-depth-preview">
-                <div className="ht-depth-line">
-                  <span className="ht-depth-tag"><Layers size={10} /> Live Depth</span>
-                  <span className="ht-depth-spread">Spread: {current.curr}0.15</span>
-                  <span className="ht-depth-signal"><Sparkles size={10} color="#F59E0B" /> {current.signal}</span>
-                </div>
-                <div className="ht-depth-bars">
-                  <div className="ht-depth-col bid" style={{ width: '58%' }}>58% Bids</div>
-                  <div className="ht-depth-col ask" style={{ width: '42%' }}>42% Asks</div>
-                </div>
+              <div className="tw-hud-item">
+                <span className="tw-label">VOLUME (24H)</span>
+                <span className="tw-val mono">{current.vol}</span>
               </div>
             </div>
-          </div>
 
-            {/* Floating Live Badges around the terminal */}
-            <div className="hero-float hero-float-1">
-              <span className="hf-pulse-dot" />
-              <span>Live Unrealized P&amp;L:</span>
-              <strong className="gain mono">+₹48,250.00 (+12.4%)</strong>
+            {/* Candlestick Workspace Canvas */}
+            <div className="tw-chart-canvas">
+              <LiveCandleChart candles={current.candles} />
             </div>
 
-            <div className="hero-float hero-float-2">
-              <Sparkles size={13} color="#F59E0B" />
-              <span>Quant Model:</span>
-              <strong style={{ color: '#38BDF8' }}>STRONG BUY 94%</strong>
-            </div>
+            {/* Execution & Depth Terminal Strip */}
+            <div className="tw-footer-depth">
+              <div className="tw-depth-row">
+                <div className="tw-depth-metric">
+                  <Layers size={11} color="var(--light-blue)" />
+                  <span className="tw-depth-name">L2 SPREAD:</span>
+                  <span className="mono tw-depth-value">{current.curr}{current.spread}</span>
+                </div>
+                <div className="tw-depth-metric">
+                  <Activity size={11} color="var(--mint)" />
+                  <span className="tw-depth-name">ALGO SIGNAL:</span>
+                  <span className="mono tw-depth-signal mint">{current.signal}</span>
+                </div>
+              </div>
 
-            <div className="hero-float hero-float-3">
-              <ShieldCheck size={14} color="#10B981" />
-              <span>2FA Security:</span>
-              <strong>6-Digit OTP Verified</strong>
+              <div className="tw-depth-meter">
+                <div className="tw-meter-bid" style={{ width: '58%' }}>
+                  <span className="mono">58% BIDS</span>
+                </div>
+                <div className="tw-meter-ask" style={{ width: '42%' }}>
+                  <span className="mono">42% ASKS</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
   )
 }
-

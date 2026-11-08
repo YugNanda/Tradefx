@@ -1,149 +1,235 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
-/* ─── Light Mode Tokens (Institutional Slate & White) ─────────────── */
+/* ─── Institutional Design Tokens ───────────────────────────────────── */
+/* Color Palette: Indigo (#582EFF) | Mint (#52FFA5) | Light Blue (#38B4FF) */
+
 :root {
-  --bg-page:        #F8FAFC;
-  --bg-card:        #FFFFFF;
-  --bg-card-hover:  #F1F5F9;
-  --bg-subtle:      #F1F5F9;
-  --bg-input:       #FFFFFF;
+  /* Requested Color Hierarchy */
+  --indigo:         #582EFF;
+  --indigo-hover:   #4922E0;
+  --indigo-light:   rgba(88, 46, 255, 0.08);
+  --indigo-mid:     rgba(88, 46, 255, 0.16);
+  --indigo-glow:    rgba(88, 46, 255, 0.28);
 
-  --accent:         #2563EB;
-  --accent-hover:   #1D4ED8;
-  --accent-light:   rgba(37, 99, 235, 0.08);
-  --accent-mid:     rgba(37, 99, 235, 0.16);
-  --accent-glow:    rgba(37, 99, 235, 0.22);
+  --mint:           #52FFA5;
+  --mint-dark:      #059669;
+  --mint-bg:        rgba(82, 255, 165, 0.12);
+  --mint-border:    rgba(82, 255, 165, 0.35);
 
-  --gain:           #10B981;
-  --gain-bg:        rgba(16, 185, 129, 0.1);
-  --loss:           #EF4444;
-  --loss-bg:        rgba(239, 68, 68, 0.1);
+  --light-blue:     #38B4FF;
+  --light-blue-bg:  rgba(56, 180, 255, 0.12);
+  --light-blue-mid: rgba(56, 180, 255, 0.24);
+
+  /* Functional Mappings */
+  --accent:         var(--indigo);
+  --accent-hover:   var(--indigo-hover);
+  --accent-light:   var(--indigo-light);
+  --accent-mid:     var(--indigo-mid);
+  --accent-glow:    var(--indigo-glow);
+
+  --gain:           #059669;
+  --gain-mint:      var(--mint);
+  --gain-bg:        rgba(5, 150, 105, 0.1);
+  --gain-border:    rgba(5, 150, 105, 0.25);
+
+  --loss:           #FF4365;
+  --loss-bg:        rgba(255, 67, 101, 0.1);
+  --loss-border:    rgba(255, 67, 101, 0.25);
   --warn:           #F59E0B;
 
-  --text-1:         #0F172A;
-  --text-2:         #334155;
-  --text-3:         #64748B;
-  --text-4:         #94A3B8;
+  /* Light Theme Surfaces (Clean Slate & Precision Metal) */
+  --bg-page:        #F8FAFD;
+  --bg-card:        #FFFFFF;
+  --bg-card-hover:  #F1F5F9;
+  --bg-subtle:      #EDF2F7;
+  --bg-input:       #FFFFFF;
 
-  --border:         rgba(226, 232, 240, 0.9);
-  --border-focus:   rgba(37, 99, 235, 0.5);
-  --border-strong:  #CBD5E1;
+  --text-1:         #0A0F1D;
+  --text-2:         #1E293B;
+  --text-3:         #475569;
+  --text-4:         #8392A7;
 
-  --shadow-sm:      0 1px 3px rgba(15, 23, 42, 0.05), 0 1px 2px rgba(15, 23, 42, 0.03);
-  --shadow-md:      0 4px 16px rgba(15, 23, 42, 0.06), 0 2px 6px rgba(15, 23, 42, 0.03);
-  --shadow-lg:      0 12px 36px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.04);
-  --shadow-accent:  0 4px 20px rgba(37, 99, 235, 0.25);
+  --border:         rgba(15, 23, 42, 0.08);
+  --border-subtle:  rgba(15, 23, 42, 0.04);
+  --border-focus:   var(--indigo);
+  --border-strong:  rgba(15, 23, 42, 0.18);
 
-  --nav-bg:         rgba(255, 255, 255, 0.92);
-  --ticker-bg:      #F8FAFC;
+  --shadow-sm:      0 1px 2px rgba(10, 15, 29, 0.04);
+  --shadow-md:      0 3px 8px rgba(10, 15, 29, 0.06);
+  --shadow-lg:      0 8px 24px rgba(10, 15, 29, 0.08);
+  --shadow-accent:  0 4px 18px rgba(88, 46, 255, 0.2);
 
-  --font:       'Plus Jakarta Sans', sans-serif;
-  --mono:       'JetBrains Mono', monospace;
-  --r-sm:       8px;
-  --r-md:       12px;
-  --r-lg:       16px;
-  --r-xl:       24px;
-  --r-full:     9999px;
+  --nav-bg:         rgba(255, 255, 255, 0.94);
+  --ticker-bg:      #F1F5F9;
+
+  /* Typography & Precision Geometry (No oversized cartoon pills) */
+  --font:           'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --mono:           'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --r-xs:           2px;
+  --r-sm:           4px;
+  --r-md:           6px;
+  --r-lg:           8px;
+  --r-xl:           10px;
+  --r-full:         9999px;
 }
 
-/* ─── Dark Mode Tokens ──────────────────────────────────────────── */
+/* ─── Institutional Dark Mode (Bloomberg/TradingView Dark Slate) ─── */
 [data-theme="dark"] {
-  --bg-page:        #080C14;
-  --bg-card:        #0E1420;
-  --bg-card-hover:  #131A28;
-  --bg-subtle:      #111827;
-  --bg-input:       #0A1020;
+  --gain:           #52FFA5;
+  --gain-bg:        rgba(82, 255, 165, 0.12);
+  --gain-border:    rgba(82, 255, 165, 0.3);
 
-  --accent:         #3B82F6;
-  --accent-hover:   #60A5FA;
-  --accent-light:   rgba(59, 130, 246, 0.1);
-  --accent-mid:     rgba(59, 130, 246, 0.2);
-  --accent-glow:    rgba(59, 130, 246, 0.25);
+  --loss:           #FF4365;
+  --loss-bg:        rgba(255, 67, 101, 0.12);
+  --loss-border:    rgba(255, 67, 101, 0.3);
 
-  --gain:           #10B981;
-  --gain-bg:        rgba(16, 185, 129, 0.1);
-  --loss:           #F87171;
-  --loss-bg:        rgba(248, 113, 113, 0.1);
-  --warn:           #FBBF24;
+  --bg-page:        #070A11;
+  --bg-card:        #0D121F;
+  --bg-card-hover:  #121829;
+  --bg-subtle:      #0F1424;
+  --bg-input:       #080C16;
 
-  --text-1:         #F1F5F9;
+  --text-1:         #F8FAFC;
   --text-2:         #CBD5E1;
   --text-3:         #94A3B8;
-  --text-4:         #475569;
+  --text-4:         #4E5D78;
 
-  --border:         rgba(241,245,249,0.08);
-  --border-focus:   rgba(59,130,246,0.5);
-  --border-strong:  rgba(241,245,249,0.15);
+  --border:         rgba(255, 255, 255, 0.07);
+  --border-subtle:  rgba(255, 255, 255, 0.04);
+  --border-focus:   var(--indigo);
+  --border-strong:  rgba(255, 255, 255, 0.14);
 
-  --shadow-sm:      0 1px 3px rgba(0,0,0,0.3);
-  --shadow-md:      0 4px 16px rgba(0,0,0,0.4);
-  --shadow-lg:      0 12px 40px rgba(0,0,0,0.5);
-  --shadow-accent:  0 4px 24px rgba(59,130,246,0.3);
+  --shadow-sm:      0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow-md:      0 4px 12px rgba(0, 0, 0, 0.45);
+  --shadow-lg:      0 10px 30px rgba(0, 0, 0, 0.6);
+  --shadow-accent:  0 4px 20px rgba(88, 46, 255, 0.35);
 
-  --nav-bg:         rgba(8, 12, 20, 0.9);
-  --ticker-bg:      #0E1420;
+  --nav-bg:         rgba(7, 10, 17, 0.92);
+  --ticker-bg:      #0A0F1B;
 }
 
-/* ─── Reset ─────────────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ─── Global Reset & Base ────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 html {
-  font-size: 16px;
+  font-size: 15px;
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
-}
-
-section[id] {
-  scroll-margin-top: 105px;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   font-family: var(--font);
   background: var(--bg-page);
   color: var(--text-1);
-  line-height: 1.6;
-  transition: background 0.25s, color 0.25s;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  transition: background 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
+  overflow-x: hidden;
 }
 
-input, button, textarea, select { font-family: inherit; }
-button { cursor: pointer; border: none; background: none; }
-a { color: inherit; text-decoration: none; }
-img { display: block; max-width: 100%; }
-
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
-
-/* ─── Shared utilities ───────────────────────────────────────────── */
-.gain  { color: var(--gain); }
-.loss  { color: var(--loss); }
-.mono  { font-family: var(--mono); }
-
-/* ─── Keyframes ─────────────────────────────────────────────────── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+input, button, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
 }
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  user-select: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/* ─── High Precision Financial Scrollbar ────────────────────────── */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--r-sm);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-4);
+}
+
+/* ─── Utilities ─────────────────────────────────────────────────── */
+.mono {
+  font-family: var(--mono);
+  font-feature-settings: "tnum" 1, "zero" 1;
+}
+
+.gain {
+  color: var(--gain);
+}
+
+.loss {
+  color: var(--loss);
+}
+
+.indigo {
+  color: var(--indigo);
+}
+
+.mint {
+  color: var(--mint);
+}
+
+.light-blue {
+  color: var(--light-blue);
+}
+
+/* ─── Precision Keyframes ────────────────────────────────────────── */
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes ticker {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
-@keyframes spinRing {
-  to { transform: rotate(360deg); }
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.5; transform: scale(0.92); }
 }
-@keyframes pulse {
-  0%,100% { opacity: 1; }
-  50%      { opacity: 0.4; }
+
+@keyframes livePing {
+  0%   { transform: scale(0.9); opacity: 1; box-shadow: 0 0 0 0 rgba(82, 255, 165, 0.6); }
+  70%  { transform: scale(1.1); opacity: 0.8; box-shadow: 0 0 0 5px rgba(82, 255, 165, 0); }
+  100% { transform: scale(0.9); opacity: 1; box-shadow: 0 0 0 0 rgba(82, 255, 165, 0); }
 }
+
 @keyframes drawLine {
   from { stroke-dashoffset: 800; }
   to   { stroke-dashoffset: 0; }
-}
-@keyframes barGrow {
-  from { transform: scaleY(0); }
-  to   { transform: scaleY(1); }
 }

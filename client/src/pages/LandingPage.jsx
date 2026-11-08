@@ -4,6 +4,7 @@ import Ticker from '../components/ticker/Ticker'
 import Hero from '../components/hero/Hero'
 import Features from '../components/features/Features'
 import Markets from '../components/features/Markets'
+import FAQ from '../components/faq/FAQ'
 import Footer from '../components/testimonials/Footer'
 import AuthModal from '../components/auth/AuthModal'
 
@@ -23,6 +24,7 @@ export default function LandingPage() {
         <Hero onOpenAuth={openAuth} />
         <Features />
         <Markets onOpenAuth={openAuth} />
+        <FAQ />
       </main>
       <Footer onOpenAuth={openAuth} />
 

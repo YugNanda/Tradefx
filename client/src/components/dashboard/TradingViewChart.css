@@ -130,27 +130,27 @@
 }
 
 .tv-btn-fx {
-  background: rgba(59, 130, 246, 0.08);
-  border-color: rgba(59, 130, 246, 0.3);
-  color: var(--accent);
+  background: var(--light-blue-bg);
+  border-color: rgba(56, 180, 255, 0.3);
+  color: var(--light-blue);
 }
 
 .tv-btn-fx:hover {
-  background: rgba(59, 130, 246, 0.16);
-  border-color: var(--accent);
+  background: rgba(56, 180, 255, 0.2);
+  border-color: var(--light-blue);
 }
 
 .tv-fx-count {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
-  font-weight: 700;
-  background: var(--accent);
+  font-size: 9px;
+  font-weight: 800;
+  background: var(--indigo);
   color: #fff;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  border-radius: var(--r-xs);
   margin-left: 2px;
 }
 
@@ -160,10 +160,10 @@
   align-items: center;
   gap: 5px;
   padding: 3px 8px;
-  background: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  border-radius: var(--r-sm);
-  color: #10b981;
+  background: var(--gain-bg);
+  border: 1px solid var(--mint-border);
+  border-radius: var(--r-xs);
+  color: var(--mint);
   font-size: 11px;
 }
 
@@ -171,8 +171,8 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #10b981;
-  animation: tvPulse 1s infinite;
+  background: var(--mint);
+  animation: livePing 1.2s infinite;
 }
 
 @keyframes tvPulse {
@@ -283,11 +283,11 @@
 }
 
 .tv-legend-item strong.gain {
-  color: #10b981;
+  color: var(--mint);
 }
 
 .tv-legend-item strong.loss {
-  color: #ef4444;
+  color: var(--loss);
 }
 
 /* Active Indicators Bar */
@@ -348,7 +348,7 @@
 }
 
 .tv-ind-action-btn.remove:hover {
-  color: #ef4444;
+  color: var(--loss);
 }
 
 /* ─── Indicators Selection Modal (TradingView-style) ─── */
@@ -447,8 +447,8 @@
 }
 
 .tv-ind-card.active {
-  border-color: rgba(59, 130, 246, 0.4);
-  background: rgba(59, 130, 246, 0.05);
+  border-color: rgba(88, 46, 255, 0.4);
+  background: rgba(88, 46, 255, 0.08);
 }
 
 .tv-ind-info {
@@ -566,8 +566,8 @@
 }
 
 .tv-ct-item.active {
-  background: rgba(59, 130, 246, 0.12);
-  color: var(--accent);
+  background: var(--indigo-light);
+  color: var(--indigo);
 }
 
 /* Chart empty placeholder */

@@ -1,22 +1,22 @@
 import { useState, useEffect } from 'react'
-import { ArrowUpRight, ArrowDownRight } from 'lucide-react'
+import { ArrowUpRight, ArrowDownRight, ChevronRight, Filter } from 'lucide-react'
 import './Markets.css'
 
 const ALL_MARKETS = [
-  { name: 'NIFTY 50',   exch: 'NSE',     cat: 'in',  base: 22450.75, curr: '₹', flag: '🇮🇳' },
-  { name: 'SENSEX',     exch: 'BSE',     cat: 'in',  base: 73850.20, curr: '₹', flag: '🇮🇳' },
-  { name: 'RELIANCE',   exch: 'NSE',     cat: 'in',  base: 2865.40,  curr: '₹', flag: '🇮🇳' },
-  { name: 'TCS',        exch: 'NSE',     cat: 'in',  base: 3945.20,  curr: '₹', flag: '🇮🇳' },
-  { name: 'HDFCBANK',   exch: 'NSE',     cat: 'in',  base: 1680.15,  curr: '₹', flag: '🇮🇳' },
-  { name: 'AAPL',       exch: 'NASDAQ',  cat: 'us',  base: 189.84,   curr: '$', flag: '🇺🇸' },
-  { name: 'NVDA',       exch: 'NASDAQ',  cat: 'us',  base: 835.20,   curr: '$', flag: '🇺🇸' },
-  { name: 'MSFT',       exch: 'NASDAQ',  cat: 'us',  base: 420.55,   curr: '$', flag: '🇺🇸' },
-  { name: 'BTC/USD',    exch: 'CRYPTO',  cat: 'cr',  base: 67450.00, curr: '$', flag: '₿' },
-  { name: 'ETH/USD',    exch: 'CRYPTO',  cat: 'cr',  base: 3540.20,  curr: '$', flag: 'Ξ' },
-  { name: 'SOL/USD',    exch: 'CRYPTO',  cat: 'cr',  base: 154.80,   curr: '$', flag: '◎' },
-  { name: 'EUR/USD',    exch: 'FOREX',   cat: 'fx',  base: 1.0864,   curr: '$', flag: '💶' },
-  { name: 'USD/INR',    exch: 'FOREX',   cat: 'fx',  base: 83.52,    curr: '₹', flag: '💱' },
-  { name: 'GOLD',       exch: 'COMMOD',  cat: 'fx',  base: 2654.80,  curr: '$', flag: '🥇' },
+  { name: 'NIFTY 50',   exch: 'NSE',     cat: 'in',  base: 22450.75, curr: '₹', flag: 'NSE' },
+  { name: 'SENSEX',     exch: 'BSE',     cat: 'in',  base: 73850.20, curr: '₹', flag: 'BSE' },
+  { name: 'RELIANCE',   exch: 'NSE',     cat: 'in',  base: 2865.40,  curr: '₹', flag: 'NSE' },
+  { name: 'TCS',        exch: 'NSE',     cat: 'in',  base: 3945.20,  curr: '₹', flag: 'NSE' },
+  { name: 'HDFCBANK',   exch: 'NSE',     cat: 'in',  base: 1680.15,  curr: '₹', flag: 'NSE' },
+  { name: 'AAPL',       exch: 'NASDAQ',  cat: 'us',  base: 189.84,   curr: '$', flag: 'US' },
+  { name: 'NVDA',       exch: 'NASDAQ',  cat: 'us',  base: 835.20,   curr: '$', flag: 'US' },
+  { name: 'MSFT',       exch: 'NASDAQ',  cat: 'us',  base: 420.55,   curr: '$', flag: 'US' },
+  { name: 'BTC/USD',    exch: 'CRYPTO',  cat: 'cr',  base: 67450.00, curr: '$', flag: 'BTC' },
+  { name: 'ETH/USD',    exch: 'CRYPTO',  cat: 'cr',  base: 3540.20,  curr: '$', flag: 'ETH' },
+  { name: 'SOL/USD',    exch: 'CRYPTO',  cat: 'cr',  base: 154.80,   curr: '$', flag: 'SOL' },
+  { name: 'EUR/USD',    exch: 'FOREX',   cat: 'fx',  base: 1.0864,   curr: '$', flag: 'FX' },
+  { name: 'USD/INR',    exch: 'FOREX',   cat: 'fx',  base: 83.52,    curr: '₹', flag: 'FX' },
+  { name: 'GOLD',       exch: 'COMMOD',  cat: 'fx',  base: 2654.80,  curr: '$', flag: 'XAU' },
 ]
 
 const sparkLine = () => {
@@ -60,90 +60,76 @@ export default function Markets({ onOpenAuth }) {
   return (
     <section className="markets" id="markets">
       <div className="section-inner">
-        <div className="section-header">
-          <div className="section-eyebrow">Institutional Multi-Asset Feed</div>
-          <h2 className="section-title">50+ Global Markets. Ticking Live.</h2>
-          <p className="section-sub">
-            From Dalal Street to Wall Street — trade Indian equities, US tech giants, crypto, and forex with zero financial risk.
-          </p>
+        <div className="markets-head-row">
+          <div>
+            <div className="section-eyebrow mono">MULTI-ASSET CATALOG</div>
+            <h2 className="section-title">Institutional Market Watch</h2>
+            <p className="section-sub">
+              Live streaming quotes for Indian Equities, US Blue-Chips, Crypto Spot, and Forex.
+            </p>
+          </div>
+
+          {/* Segmented Category Filter */}
+          <div className="markets-seg-filter">
+            {[
+              ['all', 'ALL ASSETS'],
+              ['in', 'NSE / BSE'],
+              ['us', 'US EQUITIES'],
+              ['cr', 'CRYPTO'],
+              ['fx', 'FOREX & COMMOD'],
+            ].map(([catKey, label]) => (
+              <button
+                key={catKey}
+                className={`seg-btn mono ${selectedCat === catKey ? 'active' : ''}`}
+                onClick={() => setSelectedCat(catKey)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Market Category Selector */}
-        <div className="markets-category-bar">
-          {[
-            ['all', 'All Instruments'],
-            ['in', 'NSE & BSE Equities'],
-            ['us', 'US Blue-Chips (NASDAQ)'],
-            ['cr', 'Crypto Assets'],
-            ['fx', 'Forex & Commodities'],
-          ].map(([catKey, label]) => (
-            <button
-              key={catKey}
-              className={`cat-btn ${selectedCat === catKey ? 'active' : ''}`}
-              onClick={() => setSelectedCat(catKey)}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        <div className="markets-grid">
-          {filtered.map((m, i) => {
+        {/* High-Density Quotes Matrix */}
+        <div className="markets-matrix">
+          {filtered.map((m) => {
             const up = parseFloat(m.chg) >= 0
+            const strokeColor = up ? '#52FFA5' : '#FF4365'
+
             return (
               <div
                 key={m.name}
-                className="market-card"
+                className="matrix-card"
                 onClick={() => onOpenAuth?.('signup')}
-                title="Click to trade with ₹10L virtual capital"
+                title={`Open ${m.name} in Trading Terminal`}
               >
-                <div className="mc-top">
-                  <div className="mc-left">
-                    <span className="mc-flag">{m.flag}</span>
-                    <div>
-                      <div className="mc-name">{m.name}</div>
-                      <div className="mc-exch">{m.exch}</div>
-                    </div>
+                <div className="mc-header">
+                  <div className="mc-sym-group">
+                    <span className="mc-sym mono">{m.name}</span>
+                    <span className="mc-exch mono">{m.exch}</span>
                   </div>
-                  <span className={`mc-badge ${up ? 'up' : 'dn'}`}>
-                    {up ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
+                  <div className={`mc-badge mono ${up ? 'up' : 'dn'}`}>
                     {up ? '+' : ''}{m.chg}%
-                  </span>
+                  </div>
                 </div>
 
-                <div className="mc-price mono">{fmt(m.price, m.curr)}</div>
+                <div className="mc-price-row">
+                  <span className="mc-price mono">{fmt(m.price, m.curr)}</span>
+                  <div className="mc-sparkline">
+                    <svg viewBox="0 0 100 40" preserveAspectRatio="none">
+                      <path d={m.path} fill="none" stroke={strokeColor} strokeWidth="2" />
+                    </svg>
+                  </div>
+                </div>
 
-                <svg className="mc-spark" viewBox="0 0 100 100" preserveAspectRatio="none">
-                  <path
-                    d={m.path}
-                    fill="none"
-                    stroke={up ? '#10B981' : '#EF4444'}
-                    strokeWidth="2.2"
-                  />
-                </svg>
-
-                <div className="mc-action-overlay">
-                  <span>Trade Free &rarr;</span>
+                <div className="mc-footer-action">
+                  <span className="mc-trade-label mono">TRADE VIRTUAL</span>
+                  <ChevronRight size={12} color="var(--light-blue)" />
                 </div>
               </div>
             )
           })}
         </div>
-
-        <div className="markets-more">
-          <span>+40 more institutional assets available in Tradefx terminal including</span>
-          <div className="markets-tags">
-            {['BANKNIFTY', 'MIDCAP150', 'DAX 40', 'FTSE 100', 'GBP/USD', 'USD/JPY', 'Silver', 'Crude Oil (WTI)'].map(
-              (t) => (
-                <span key={t} className="mtag">
-                  {t}
-                </span>
-              )
-            )}
-          </div>
-        </div>
       </div>
     </section>
   )
 }
-

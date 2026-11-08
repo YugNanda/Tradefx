@@ -33,16 +33,16 @@ const ModalRightVisual = memo(function ModalRightVisual() {
           <svg viewBox="0 0 200 80" preserveAspectRatio="none" style={{ width: '100%', height: 80 }}>
             <defs>
               <linearGradient id="mrGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.3"/>
-                <stop offset="100%" stopColor="#3B82F6" stopOpacity="0"/>
+                <stop offset="0%" stopColor="#52FFA5" stopOpacity="0.25"/>
+                <stop offset="100%" stopColor="#52FFA5" stopOpacity="0"/>
               </linearGradient>
             </defs>
             <path d="M0 60 L20 50 L40 55 L60 35 L80 40 L100 25 L120 30 L140 15 L160 20 L180 8 L200 12 L200 80 L0 80 Z" fill="url(#mrGrad)" />
-            <path d="M0 60 L20 50 L40 55 L60 35 L80 40 L100 25 L120 30 L140 15 L160 20 L180 8 L200 12" fill="none" stroke="#3B82F6" strokeWidth="2" style={{ strokeDasharray: 600, strokeDashoffset: 600, animation: 'drawLine 1.5s ease 0.5s forwards' }}/>
+            <path d="M0 60 L20 50 L40 55 L60 35 L80 40 L100 25 L120 30 L140 15 L160 20 L180 8 L200 12" fill="none" stroke="#52FFA5" strokeWidth="2" style={{ strokeDasharray: 600, strokeDashoffset: 600, animation: 'drawLine 1.5s ease 0.5s forwards' }}/>
           </svg>
           <div className="mr-chart-label">
             <span>NIFTY 50</span>
-            <span className="gain">▲ +0.96% today</span>
+            <span className="gain" style={{ color: '#52FFA5' }}>▲ +0.96% today</span>
           </div>
         </div>
       </div>
@@ -128,7 +128,7 @@ export default function AuthModal({ mode: initialMode, onClose }) {
         toast.success('Welcome back!')
       } else {
         await register(form.name, form.email, form.password)
-        toast.success('Account created! Welcome to Tradefx.')
+        toast.success('Account created! Welcome to TradeFX.')
       }
       onClose()
       navigate('/dashboard')
@@ -293,7 +293,7 @@ export default function AuthModal({ mode: initialMode, onClose }) {
               </button>
             </div>
             <p className="otp-popup-msg">
-              Your 6-digit Tradefx recovery code for <strong>{activeOtpPopup.email}</strong> is:
+              Your 6-digit TradeFX recovery code for <strong>{activeOtpPopup.email}</strong> is:
             </p>
             <div className="otp-popup-code-row">
               <div className="otp-popup-code-badge">{activeOtpPopup.code}</div>
@@ -329,7 +329,7 @@ export default function AuthModal({ mode: initialMode, onClose }) {
                 <circle cx="21" cy="6" r="2.5" fill="white"/>
               </svg>
             </div>
-            <span>Tradefx</span>
+            <span>TradeFX</span>
           </div>
 
           {/* Mode Switcher Tabs (Login / Signup) */}
@@ -445,7 +445,7 @@ export default function AuthModal({ mode: initialMode, onClose }) {
               <button className={`modal-submit ${loading ? 'loading' : ''}`} onClick={submit} disabled={loading}>
                 {loading
                   ? <span className="submit-spin" />
-                  : mode === 'login' ? 'Sign in to Tradefx' : 'Create free account'
+                  : mode === 'login' ? 'Sign in to TradeFX' : 'Create free account'
                 }
               </button>
 
@@ -474,14 +474,14 @@ export default function AuthModal({ mode: initialMode, onClose }) {
                 <div className="forgot-step-view">
                   <div className="modal-headline">
                     <h2>Reset Password</h2>
-                    <p>Enter your Tradefx registered email to receive a 6-digit verification code.</p>
+                    <p>Enter your TradeFX registered email to receive a 6-digit verification code.</p>
                   </div>
 
                   <div className="mf-group" style={{ marginBottom: 20 }}>
                     <label>Account Email</label>
                     <input
                       type="email"
-                      placeholder="trader@tradex.com"
+                      placeholder="trader@tradefx.com"
                       value={forgotEmail}
                       onChange={(e) => setForgotEmail(e.target.value)}
                       onKeyDown={(e) => { if (e.key === 'Enter') handleSendOtp(e) }}
@@ -563,7 +563,7 @@ export default function AuthModal({ mode: initialMode, onClose }) {
                 <div className="forgot-step-view">
                   <div className="modal-headline">
                     <h2>Create New Password</h2>
-                    <p>Your code is verified. Enter a secure password for your Tradefx account.</p>
+                    <p>Your code is verified. Enter a secure password for your TradeFX account.</p>
                   </div>
 
                   <div className="modal-fields">

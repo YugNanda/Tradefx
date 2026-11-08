@@ -43,7 +43,7 @@ const AVAILABLE_INDICATORS = [
     id: 'vol',
     name: 'Volume',
     abbr: 'VOL',
-    color: '#10B981',
+    color: '#52FFA5',
     category: 'Volume',
     desc: 'Plots trading volume histogram with bull/bear color coding at the base of the chart.',
   },
@@ -51,7 +51,7 @@ const AVAILABLE_INDICATORS = [
     id: 'sma',
     name: 'Moving Average (SMA 20)',
     abbr: 'SMA 20',
-    color: '#F59E0B',
+    color: '#38B4FF',
     category: 'Moving Averages',
     desc: 'Smooths price action by calculating the arithmetic mean over the last 20 periods.',
   },
@@ -59,7 +59,7 @@ const AVAILABLE_INDICATORS = [
     id: 'ema',
     name: 'Exponential Moving Average (EMA 50)',
     abbr: 'EMA 50',
-    color: '#06B6D4',
+    color: '#582EFF',
     category: 'Moving Averages',
     desc: 'Places greater weight on recent price ticks for rapid trend detection.',
   },
@@ -67,7 +67,7 @@ const AVAILABLE_INDICATORS = [
     id: 'bb',
     name: 'Bollinger Bands (20, 2)',
     abbr: 'BB (20, 2)',
-    color: '#60A5FA',
+    color: '#38B4FF',
     category: 'Volatility',
     desc: 'Upper & lower statistical standard deviation envelopes around a 20-period SMA.',
   },
@@ -75,7 +75,7 @@ const AVAILABLE_INDICATORS = [
     id: 'rsi',
     name: 'Relative Strength Index (RSI 14)',
     abbr: 'RSI 14',
-    color: '#A855F7',
+    color: '#582EFF',
     category: 'Oscillators',
     desc: 'Momentum oscillator (0-100) highlighting overbought (>70) and oversold (<30) levels.',
   },
@@ -83,7 +83,7 @@ const AVAILABLE_INDICATORS = [
     id: 'macd',
     name: 'MACD (12, 26, 9)',
     abbr: 'MACD',
-    color: '#3B82F6',
+    color: '#38B4FF',
     category: 'Oscillators',
     desc: 'Moving Average Convergence Divergence with fast/slow lines and histogram.',
   },
@@ -181,23 +181,23 @@ export default function TradingViewChart({
   const themeColors = useMemo(() => {
     if (isDark) {
       return {
-        bg: '#0F172A',
+        bg: '#0D121F',
         text: '#94A3B8',
-        grid: 'rgba(255, 255, 255, 0.05)',
-        border: 'rgba(255, 255, 255, 0.1)',
-        crosshair: '#3B82F6',
-        up: '#10B981',
-        down: '#EF4444',
+        grid: 'rgba(255, 255, 255, 0.04)',
+        border: 'rgba(255, 255, 255, 0.08)',
+        crosshair: '#38B4FF',
+        up: '#52FFA5',
+        down: '#FF4365',
       }
     }
     return {
       bg: '#FFFFFF',
       text: '#475569',
-      grid: 'rgba(0, 0, 0, 0.05)',
-      border: 'rgba(0, 0, 0, 0.1)',
-      crosshair: '#2563EB',
-      up: '#10B981',
-      down: '#EF4444',
+      grid: 'rgba(15, 23, 42, 0.05)',
+      border: 'rgba(15, 23, 42, 0.08)',
+      crosshair: '#582EFF',
+      up: '#059669',
+      down: '#FF4365',
     }
   }, [isDark])
 
@@ -336,35 +336,35 @@ export default function TradingViewChart({
     let series
     if (chartType === 'candlestick') {
       series = chart.addSeries(CandlestickSeries, {
-        upColor: '#10B981',
-        downColor: '#EF4444',
+        upColor: themeColors.up,
+        downColor: themeColors.down,
         borderVisible: true,
-        borderColor: '#10B981',
-        borderUpColor: '#10B981',
-        borderDownColor: '#EF4444',
+        borderColor: themeColors.up,
+        borderUpColor: themeColors.up,
+        borderDownColor: themeColors.down,
         wickVisible: true,
-        wickUpColor: '#10B981',
-        wickDownColor: '#EF4444',
+        wickUpColor: themeColors.up,
+        wickDownColor: themeColors.down,
         priceFormat: { type: 'price', precision: 2, minMove: 0.01 },
       })
     } else if (chartType === 'area') {
       series = chart.addSeries(AreaSeries, {
-        lineColor: '#3B82F6',
-        topColor: 'rgba(59, 130, 246, 0.4)',
-        bottomColor: 'rgba(59, 130, 246, 0.02)',
+        lineColor: '#582EFF',
+        topColor: 'rgba(88, 46, 255, 0.35)',
+        bottomColor: 'rgba(56, 180, 255, 0.01)',
         lineWidth: 2,
         priceFormat: { type: 'price', precision: 2, minMove: 0.01 },
       })
     } else if (chartType === 'line') {
       series = chart.addSeries(LineSeries, {
-        color: '#3B82F6',
+        color: '#38B4FF',
         lineWidth: 2,
         priceFormat: { type: 'price', precision: 2, minMove: 0.01 },
       })
     } else if (chartType === 'bar') {
       series = chart.addSeries(BarSeries, {
-        upColor: '#10B981',
-        downColor: '#EF4444',
+        upColor: themeColors.up,
+        downColor: themeColors.down,
         priceFormat: { type: 'price', precision: 2, minMove: 0.01 },
       })
     }
@@ -410,7 +410,7 @@ export default function TradingViewChart({
           cleanData.map((c) => ({
             time: c.time,
             value: c.volume,
-            color: c.close >= c.open ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)',
+            color: c.close >= c.open ? 'rgba(82, 255, 165, 0.45)' : 'rgba(255, 67, 101, 0.45)',
           }))
         )
       }
@@ -448,7 +448,7 @@ export default function TradingViewChart({
         cleanData.map((c) => ({
           time: c.time,
           value: c.volume,
-          color: c.close >= c.open ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)',
+          color: c.close >= c.open ? 'rgba(82, 255, 165, 0.45)' : 'rgba(255, 67, 101, 0.45)',
         }))
       )
     }
@@ -684,7 +684,7 @@ export default function TradingViewChart({
         volumeSeriesRef.current.update({
           time: last.time,
           value: last.volume,
-          color: updatedClose >= last.open ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)',
+          color: updatedClose >= last.open ? 'rgba(82, 255, 165, 0.45)' : 'rgba(255, 67, 101, 0.45)',
         })
       }
 
@@ -963,10 +963,10 @@ export default function TradingViewChart({
               O: <strong>{displayedOhlc.open?.toFixed(2)}</strong>
             </span>
             <span className="tv-legend-item">
-              H: <strong style={{ color: '#10B981' }}>{displayedOhlc.high?.toFixed(2)}</strong>
+              H: <strong style={{ color: 'var(--mint)' }}>{displayedOhlc.high?.toFixed(2)}</strong>
             </span>
             <span className="tv-legend-item">
-              L: <strong style={{ color: '#EF4444' }}>{displayedOhlc.low?.toFixed(2)}</strong>
+              L: <strong style={{ color: 'var(--loss)' }}>{displayedOhlc.low?.toFixed(2)}</strong>
             </span>
             <span className="tv-legend-item">
               C:{' '}
@@ -1014,7 +1014,7 @@ export default function TradingViewChart({
         </div>
 
         {/* Brand Watermark */}
-        <div className="tv-watermark">TRADEX</div>
+        <div className="tv-watermark">TradeFX</div>
 
         {/* Lightweight Charts Canvas Root */}
         <div ref={containerRef} className="tv-chart-inner" />

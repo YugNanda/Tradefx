@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Trophy, BarChart3, Bell } from 'lucide-react'
+import { Trophy, BarChart3, Bell, Terminal, Wallet, ShieldCheck, Plus, Sparkles, Sun, Moon } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
 import { useMarket } from '../context/MarketContext'
-import { marketApi, watchlistApi, notificationsApi } from '../api/marketApi'
+import { marketApi, watchlistApi, notificationsApi, portfolioApi } from '../api/marketApi'
 import toast from 'react-hot-toast'
 import LiveTicker from '../components/dashboard/LiveTicker'
 import SymbolSearch from '../components/dashboard/SymbolSearch'
@@ -27,6 +27,7 @@ export default function DashboardPage() {
   const [catalog, setCatalog] = useState([])
   const [selected, setSelected] = useState(null)
   const [refreshKey, setRefreshKey] = useState(0)
+  const [portfolioSummary, setPortfolioSummary] = useState({ virtualBalance: 1000000, totalNetWorth: 1000000 })
 
   // Modals state
   const [showAnalytics, setShowAnalytics] = useState(false)
@@ -44,11 +45,24 @@ export default function DashboardPage() {
         }
       })
       .catch(() => {})
+
     notificationsApi
       .get()
       .then((res) => setUnreadNotifs(res.unreadCount || 0))
       .catch(() => {})
-  }, [])
+
+    portfolioApi
+      .get()
+      .then((res) => {
+        if (res) {
+          setPortfolioSummary({
+            virtualBalance: res.virtualBalance ?? 1000000,
+            totalNetWorth: res.totalNetWorth ?? res.virtualBalance ?? 1000000,
+          })
+        }
+      })
+      .catch(() => {})
+  }, [refreshKey])
 
   const selectSymbol = useCallback(
     (symbol) => {
@@ -63,7 +77,7 @@ export default function DashboardPage() {
     if (!selected) return
     try {
       await watchlistApi.add(selected.symbol)
-      toast.success(`${selected.symbol} added to watchlist`)
+      toast.success(`${selected.symbol} pinned to Watchlist`)
       setRefreshKey((k) => k + 1)
     } catch (err) {
       toast.error(err.response?.data?.message || 'Could not add to watchlist')
@@ -78,25 +92,38 @@ export default function DashboardPage() {
 
   return (
     <div className="dash-page">
+      {/* ─── Institutional Header Ribbon ─── */}
       <header className="dash-header">
         <div className="dash-header-inner">
-          <div className="dash-logo">
-            <div className="dash-logo-icon">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M3 17L9 11L13 15L21 6"
-                  stroke="white"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <circle cx="21" cy="6" r="2.5" fill="white" />
-              </svg>
-            </div>
-            <span>Tradefx Terminal</span>
-            <div className="dash-live-conn-pill" title={connected ? 'Live 1.5s Institutional Stream Connected' : 'Connecting to Tradefx engine…'}>
+          <div className="dash-logo-block">
+            <a href="/" className="dash-logo" title="Back to overview">
+              <div className="dash-logo-icon">
+                <Terminal size={14} color="#FFFFFF" />
+              </div>
+              <div className="dash-brand-col">
+                <span className="dash-brand-name">TradeFX</span>
+                <span className="dash-brand-sub mono">TERMINAL PRO</span>
+              </div>
+            </a>
+
+            <div
+              className="dash-live-conn-pill"
+              title={connected ? 'Connected to WebSocket Tick Stream' : 'Establishing stream connection…'}
+            >
               <span className={`dash-conn-dot ${connected ? 'on' : ''}`} />
-              <span className="dash-conn-text">{connected ? 'Live 1.5s' : 'Connecting…'}</span>
+              <span className="dash-conn-text mono">{connected ? '1.5S STREAM ACTIVE' : 'CONNECTING…'}</span>
+              <span className="dash-latency mono">12ms</span>
+            </div>
+          </div>
+
+          {/* Quick Portfolio Telemetry Pill in Header */}
+          <div className="dash-telemetry-strip">
+            <div className="dash-capital-pill" title="Current Virtual Buying Power">
+              <Wallet size={12} color="var(--mint)" />
+              <span className="dcp-label">BALANCE:</span>
+              <span className="dcp-val mono">
+                ₹{Number(portfolioSummary.virtualBalance || 1000000).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+              </span>
             </div>
           </div>
 
@@ -105,72 +132,75 @@ export default function DashboardPage() {
             <button
               className="dash-header-btn"
               onClick={() => setShowLeaderboard(true)}
-              title="Global Trader Leaderboard"
+              title="Global Trader Rankings"
             >
-              <Trophy size={14} color="#F59E0B" /> Leaderboard
+              <Trophy size={13} color="var(--light-blue)" />
+              <span>Leaderboard</span>
             </button>
 
             {/* Performance Analytics Button */}
             <button
               className="dash-header-btn"
               onClick={() => setShowAnalytics(true)}
-              title="Portfolio Performance Analytics"
+              title="Portfolio Performance & Risk Analytics"
             >
-              <BarChart3 size={14} color="var(--accent)" /> Analytics
+              <BarChart3 size={13} color="var(--indigo)" />
+              <span>Analytics</span>
             </button>
 
             {/* Notifications Button */}
             <button
-              className="dash-header-btn"
+              className="dash-header-btn dash-btn-icon"
               onClick={() => setShowNotifications(true)}
               title="Notification Center"
             >
-              <Bell size={14} />
+              <Bell size={13} />
               {unreadNotifs > 0 && <span className="dash-notif-badge">{unreadNotifs}</span>}
             </button>
 
             {/* Theme Toggle */}
-            <button className="dash-theme-btn" onClick={toggle} aria-label="Toggle Theme">
-              {theme === 'dark' ? (
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="5" />
-                  <line x1="12" y1="1" x2="12" y2="3" />
-                  <line x1="12" y1="21" x2="12" y2="23" />
-                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                  <line x1="1" y1="12" x2="3" y2="12" />
-                  <line x1="21" y1="12" x2="23" y2="12" />
-                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                </svg>
-              ) : (
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                </svg>
-              )}
+            <button className="dash-theme-btn" onClick={toggle} aria-label="Toggle Theme" title="Toggle theme">
+              {theme === 'dark' ? <Sun size={14} color="var(--mint)" /> : <Moon size={14} color="var(--indigo)" />}
             </button>
 
-            <div className="dash-avatar">{user?.name?.[0]?.toUpperCase() || 'T'}</div>
-            <button className="dash-signout" onClick={handleLogout}>
+            <div className="dash-user-chip" title={user?.email || 'Virtual Trader'}>
+              <div className="dash-avatar">{user?.name?.[0]?.toUpperCase() || 'T'}</div>
+              <span className="dash-username">{user?.name || 'Trader'}</span>
+            </div>
+
+            <button className="dash-signout" onClick={handleLogout} title="Exit session">
               Sign out
             </button>
           </div>
         </div>
       </header>
 
+      {/* ─── Real-Time Monospace Ticker ─── */}
       <LiveTicker />
 
+      {/* ─── Workstation Body ─── */}
       <div className="dash-body">
+        {/* Quick Command & Search Toolbar */}
         <div className="dash-toolbar">
-          <SymbolSearch onSelect={setSelected} />
+          <div className="dash-search-container">
+            <SymbolSearch onSelect={setSelected} />
+          </div>
           {selected && (
-            <button className="dash-watch-btn" onClick={addCurrentToWatchlist}>
-              + Add to Watchlist
+            <button className="dash-watch-btn" onClick={addCurrentToWatchlist} title="Pin symbol to watchlist">
+              <Plus size={13} color="var(--mint)" />
+              <span>Watchlist</span>
             </button>
           )}
+          <div className="dash-asset-active-pill">
+            <span className="daap-label">ACTIVE:</span>
+            <span className="daap-sym mono">{selected?.symbol || 'RELIANCE'}</span>
+            <span className="daap-exch mono">{selected?.exchange || 'NSE'}</span>
+          </div>
         </div>
 
+        {/* Modular Grid Layout */}
         <div className="dash-grid">
+          {/* Main Execution & Charts Workstation */}
           <div className="dash-col-main">
             <SymbolDetail
               instrument={selected}
@@ -186,6 +216,7 @@ export default function DashboardPage() {
             <NewsPanel symbol={selected?.symbol} />
           </div>
 
+          {/* High-Density Watchlist & Alerts Side Workstation */}
           <div className="dash-col-side">
             <WatchlistPanel onSelect={selectSymbol} refreshKey={refreshKey} />
             <AlertsPanel presetSymbol={selected?.symbol} />
